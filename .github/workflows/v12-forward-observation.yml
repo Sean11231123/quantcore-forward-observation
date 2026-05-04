@@ -36,6 +36,14 @@ jobs:
         run: |
           python scripts/run_v12_scan_once.py
 
+      - name: Send workflow dispatch heartbeat
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          python scripts/send_telegram_heartbeat.py
+
       - name: Process Telegram review updates
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
