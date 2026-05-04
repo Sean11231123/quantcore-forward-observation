@@ -1,0 +1,139 @@
+{
+  "strategy_a_v1_validation": {
+    "metadata": {
+      "strategy_name": "Strategy_A_HigherTF_Pullback",
+      "strategy_version": "v1_validation",
+      "timeframe": "1h",
+      "direction": "long_only",
+      "execution_model": "enter_on_signal_bar_close",
+      "same_bar_rule": "TP_first_then_SL_then_TimeStop",
+      "portfolio_model": "per_symbol_independent",
+      "portfolio_comparability_to_V12": "Not directly comparable",
+      "parameters_modified": "No",
+      "existing_system_modified": "No"
+    },
+    "full_period": {
+      "trades": 74,
+      "win_pct": 25.675675675675674,
+      "expectancy_E_A": -0.14400004974169575,
+      "expectancy_E_B": -0.2840000497416959,
+      "profit_factor": 0.780162885555174,
+      "max_dd": 0.8969848337698202,
+      "final_balance": 99.3062033916183,
+      "sharpe": -0.777867182892688
+    },
+    "OOS": {
+      "IS": {
+        "trades": 43,
+        "win_pct": 20.930232558139537,
+        "expectancy_E_A": -0.4620643827761732,
+        "expectancy_E_B": -0.6020643827761732,
+        "profit_factor": 0.6065792488172147,
+        "max_dd": 0.7457529899750084,
+        "final_balance": 99.37561906480805,
+        "sharpe": -1.1599217506409583
+      },
+      "OOS": {
+        "trades": 31,
+        "win_pct": 32.25806451612903,
+        "expectancy_E_A": 0.2971859605964501,
+        "expectancy_E_B": 0.1571859605964502,
+        "profit_factor": 1.163549671653763,
+        "max_dd": 0.3657358724938323,
+        "final_balance": 99.92734457221896,
+        "sharpe": 0.32090877414584595
+      },
+      "WFE": -0.26107832499848527
+    },
+    "yearly_OOS": {
+      "2024": {
+        "trades": 14,
+        "exp_EB": 0.9809553201510902
+      },
+      "2025": {
+        "trades": 12,
+        "exp_EB": -0.7407653522077555
+      },
+      "2026": {
+        "trades": 5,
+        "exp_EB": 0.005714904573551394
+      }
+    },
+    "monte_carlo_OOS": {
+      "executed": "Yes",
+      "reason_if_skipped": "",
+      "p5_p50_p95_final_balance": [
+        82.58464372919887,
+        103.64344016371552,
+        132.3408635610867
+      ],
+      "prob_positive_expectancy": 62.4
+    },
+    "PSR": {
+      "value": "not_available",
+      "Bonferroni_p": "not_available",
+      "n_tests": 1,
+      "reason_if_not_available": "PSR/binomial implementation not included in Strategy A v1 validation"
+    },
+    "forward_return_OOS": {
+      "pct_positive_4bars": 38.70967741935484,
+      "pct_positive_8bars": 41.935483870967744,
+      "median_return_4bars": -0.593065693430655
+    },
+    "exit_distribution_OOS": {
+      "TAKE_PROFIT": 10,
+      "STOP_LOSS": 12,
+      "TIME_STOP": 0,
+      "BREAK_EVEN_SL": 9
+    },
+    "btc_adx_regime_split_OOS": {
+      "low_btc_adx_lt_25": {
+        "trades": 0,
+        "win_pct": 0.0,
+        "exp_EB": 0.0
+      },
+      "mid_btc_adx_25_35": {
+        "trades": 23,
+        "win_pct": 34.78260869565217,
+        "exp_EB": 0.34424664055017606
+      },
+      "high_btc_adx_gt_35": {
+        "trades": 8,
+        "win_pct": 25.0,
+        "exp_EB": -0.3806134942705115
+      }
+    },
+    "acceptance_gate": {
+      "OOS_trades_at_least_50": "No",
+      "OOS_expectancy_EB_positive": "Yes",
+      "OOS_profit_factor_above_1": "Yes",
+      "yearly_not_all_negative": "Yes",
+      "max_dd_below_30pct": "Yes",
+      "pct_positive_4bars_above_50pct": "No",
+      "WFE_above_0": "No",
+      "candidate_approved": "Maybe",
+      "reason": "borderline_sample"
+    }
+  },
+  "files_created": [
+    "backtest/strategy_a_backtest.py",
+    "backtest/strategy_a_validation.py",
+    "backtest/output/strategy_a_trade_log.csv",
+    "backtest/output/strategy_a_validation_results.json"
+  ],
+  "files_modified_existing": [
+    "none"
+  ],
+  "not_modified": [
+    "V12 entry logic",
+    "V12 exit logic",
+    "engine.py",
+    "router.py",
+    "Telegram",
+    "Forward Logger",
+    "Pullback",
+    "VolExpansion",
+    "live trading"
+  ],
+  "errors": []
+}

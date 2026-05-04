@@ -1,0 +1,127 @@
+{
+  "momentum_breakout_validation": {
+    "strategy_name": "Momentum_Breakout",
+    "strategy_version": "v0_validation",
+    "timeframe": "15m",
+    "data_source": "clean CSV data with V12 helper indicators, 2021/2022 excluded_due_source_coverage",
+    "portfolio_model": "sequential",
+    "same_bar_rule": "SL_first",
+    "parameters_modified": "No",
+    "full": {
+      "trades": 3243,
+      "win_pct": 40.02466851680543,
+      "expectancy_pct": -0.09935859543631334,
+      "max_dd_pct": 97.39537272543272,
+      "final_balance": 3.1225271930964196,
+      "profit_factor": 0.84932283934768
+    },
+    "IS_2023": {
+      "trades": 877,
+      "win_pct": 35.91790193842645,
+      "expectancy_pct": -0.20197642531355856,
+      "max_dd_pct": 86.60454788316775,
+      "final_balance": 15.943703394767727,
+      "profit_factor": 0.7133324065457114
+    },
+    "OOS_2024_2026": {
+      "trades": 2366,
+      "win_pct": 41.5469146238377,
+      "expectancy_pct": -0.061321470836843944,
+      "max_dd_pct": 81.20562043019113,
+      "final_balance": 19.584704480397956,
+      "profit_factor": 0.904584316740816
+    },
+    "yearly": {
+      "2023": {
+        "trades": 877,
+        "expectancy_pct": -0.20197642531355856
+      },
+      "2024": {
+        "trades": 1060,
+        "expectancy_pct": -0.08347382075470608
+      },
+      "2025": {
+        "trades": 1013,
+        "expectancy_pct": -0.024001159921015418
+      },
+      "2026": {
+        "trades": 293,
+        "expectancy_pct": -0.1102087883958916
+      }
+    }
+  },
+  "momentum_entry_quality": {
+    "OOS": {
+      "winning_trades": {
+        "count": 983,
+        "avg_mfe_atr": 3.866269007502912,
+        "avg_mae_atr": 0.8132061211223821,
+        "avg_bars_held": 14.964394710071211
+      },
+      "losing_trades": {
+        "count": 1383,
+        "avg_mfe_atr": 1.0132020411193905,
+        "avg_mae_atr": 2.532732343588752,
+        "avg_bars_held": 13.837310195227765
+      }
+    },
+    "forward_return_proxy_OOS": {
+      "pct_positive_4bars": 46.66103127641589,
+      "pct_positive_8bars": 46.61876584953508,
+      "pct_positive_12bars": 47.39957716701903,
+      "avg_return_4bars": 0.05201072015964973,
+      "avg_return_8bars": 0.08072442834360144,
+      "avg_return_12bars": 0.09827487847710939,
+      "median_return_4bars": -0.05168832785220567,
+      "median_return_8bars": -0.06808504183170627,
+      "median_return_12bars": -0.08506294658046018
+    }
+  },
+  "momentum_mc_oos": {
+    "executed": "Yes",
+    "reason_if_skipped": "",
+    "n_simulations": 5000,
+    "sample_size": 50,
+    "final_balance": {
+      "p5": 83.65148252904231,
+      "p25": 90.15346032066108,
+      "p50": 97.16081726306787,
+      "p75": 102.13242995416145,
+      "p95": 112.85184823771414
+    },
+    "expectancy": {
+      "p5": -0.34984999999998806,
+      "p50": -0.04999999999998983,
+      "p95": 0.2498500000000095
+    },
+    "probability_positive_expectancy": 30.159999999999997,
+    "probability_final_balance_above_100": 30.159999999999997
+  },
+  "acceptance_gate": {
+    "OOS_trades_at_least_50": "Yes",
+    "OOS_expectancy_positive": "No",
+    "OOS_profit_factor_above_1": "No",
+    "yearly_not_all_negative": "No",
+    "max_dd_below_30pct": "No",
+    "entry_quality_positive_4bars_above_50pct": "No",
+    "candidate_can_enter_forward_logger_research_only": {
+      "value": "No",
+      "reason": "no_positive_oos_edge"
+    }
+  },
+  "files_created_or_modified": [
+    "core/strategies/momentum_breakout.py",
+    "backtest/momentum_breakout_validation.py",
+    "backtest/output/momentum_breakout_trade_log.csv",
+    "backtest/output/momentum_breakout_validation_results.json"
+  ],
+  "not_modified": [
+    "V12 entry logic",
+    "V12 exit logic",
+    "router.py",
+    "Telegram",
+    "Forward Logger",
+    "live trading"
+  ],
+  "errors": []
+}

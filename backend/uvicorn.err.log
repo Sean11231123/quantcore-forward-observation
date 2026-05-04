@@ -1,0 +1,5 @@
+INFO:     Started server process [32956]
+INFO:     Waiting for application startup.
+2026-05-02 21:09:34 [INFO] TradingEngine: Trading engine simulation starting
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)

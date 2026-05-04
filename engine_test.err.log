@@ -1,0 +1,14 @@
+fatal: bad revision 'HEAD'
+2026-05-02 22:26:38 [INFO] TradingEngine: Trading Engine starting in testnet smoke mode
+2026-05-02 22:26:39 [INFO] TradingEngine: REGIME BTC/USDT:USDT: low_volatility conf=0.60 ADX=18.70 vol=0.28 strategies=['arbitrage', 'market_making']
+2026-05-02 22:26:39 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []
+2026-05-02 22:27:38 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []
+2026-05-02 22:28:40 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []
+2026-05-02 22:29:39 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []
+2026-05-02 22:30:40 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []
+2026-05-02 22:31:39 [INFO] TradingEngine: REGIME BTC/USDT:USDT: low_volatility conf=0.60 ADX=18.70 vol=0.28 strategies=['arbitrage', 'market_making']
+2026-05-02 22:31:41 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []
+2026-05-02 22:32:45 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []
+2026-05-02 22:33:42 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []
+2026-05-02 22:34:43 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []
+2026-05-02 22:35:42 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> []

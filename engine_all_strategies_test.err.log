@@ -1,0 +1,34 @@
+fatal: bad revision 'HEAD'
+2026-05-02 22:43:57 [INFO] TradingEngine: Trading Engine starting in testnet smoke mode
+2026-05-02 22:43:58 [INFO] TradingEngine: REGIME BTC/USDT:USDT: low_volatility conf=0.60 ADX=18.70 vol=0.28 strategies=['arbitrage', 'market_making']
+2026-05-02 22:43:59 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:43:59 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:43:59 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78275.10 qty=0.000064 ask=78431.80 qty=0.000064 mid=78353.45 spread=156.7069
+2026-05-02 22:44:58 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:44:59 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:44:59 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78275.60 qty=0.000064 ask=78432.30 qty=0.000064 mid=78353.95 spread=156.7079
+2026-05-02 22:45:59 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:45:59 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:46:00 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78275.85 qty=0.000064 ask=78432.55 qty=0.000064 mid=78354.20 spread=156.7084
+2026-05-02 22:47:00 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:47:01 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:47:01 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78273.85 qty=0.000064 ask=78430.55 qty=0.000064 mid=78352.20 spread=156.7044
+2026-05-02 22:48:01 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:48:01 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:48:01 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78275.55 qty=0.000064 ask=78432.25 qty=0.000064 mid=78353.90 spread=156.7078
+2026-05-02 22:48:59 [INFO] TradingEngine: REGIME BTC/USDT:USDT: low_volatility conf=0.60 ADX=18.70 vol=0.28 strategies=['arbitrage', 'market_making']
+2026-05-02 22:49:01 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:49:01 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:49:01 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78286.78 qty=0.000064 ask=78443.52 qty=0.000064 mid=78365.15 spread=156.7303
+2026-05-02 22:50:03 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:50:03 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:50:04 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78286.78 qty=0.000064 ask=78443.52 qty=0.000064 mid=78365.15 spread=156.7303
+2026-05-02 22:51:01 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:51:02 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:51:02 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78275.80 qty=0.000064 ask=78432.50 qty=0.000064 mid=78354.15 spread=156.7083
+2026-05-02 22:52:02 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:52:02 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:52:02 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78298.37 qty=0.000064 ask=78455.13 qty=0.000064 mid=78376.75 spread=156.7535
+2026-05-02 22:53:02 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: low_volatility -> ['arbitrage', 'market_making']
+2026-05-02 22:53:02 [WARNING] TradingEngine: Strategy BTC/USDT:USDT/arbitrage skipped after error: okx {"msg":"API key doesn't exist","code":"50119"}
+2026-05-02 22:53:02 [INFO] TradingEngine: MM BTC/USDT:USDT: bid=78350.82 qty=0.000064 ask=78507.68 qty=0.000064 mid=78429.25 spread=156.8585

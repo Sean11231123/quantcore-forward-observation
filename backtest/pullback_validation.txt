@@ -1,0 +1,40 @@
+============================================================
+PULLBACK STRATEGY VALIDATION
+============================================================
+
+[Full Backtest]
+2021-2026: trades=12201 win%=47.28 expectancy=-0.0457% max_dd=99.84% sharpe=-4.323 final=0.1660
+
+[OOS]
+IS  2021-2023: trades=2887 win%=47.07 expectancy=-0.0622% max_dd=91.20% sharpe=-2.889 final=13.7109
+OOS 2024-2026: trades=9304 win%=47.38 expectancy=-0.0402% max_dd=98.82% sharpe=-3.313 final=1.2583
+OOS exits: {'HARD_SL': 4583, 'TAKE_PROFIT': 4030, 'TIME_STOP': 691}
+PSR Sharpe > 0: 0.00%
+Bonferroni p-value=1.0000, threshold=0.0083, significant=False
+
+[Walk-Forward]
+Fold 1: IS=2021-01~2021-12, OOS=2022-01~2022-03, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 0.5, 'time_stop_bars': 20}, trades=0, win%=0.00, exp=0.0000%
+Fold 2: IS=2021-04~2022-03, OOS=2022-04~2022-06, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 0.5, 'time_stop_bars': 20}, trades=0, win%=0.00, exp=0.0000%
+Fold 3: IS=2021-07~2022-06, OOS=2022-07~2022-09, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 0.5, 'time_stop_bars': 20}, trades=0, win%=0.00, exp=0.0000%
+Fold 4: IS=2021-10~2022-09, OOS=2022-10~2022-12, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 0.5, 'time_stop_bars': 20}, trades=0, win%=0.00, exp=0.0000%
+Fold 5: IS=2022-01~2022-12, OOS=2023-01~2023-03, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 0.5, 'time_stop_bars': 20}, trades=0, win%=0.00, exp=0.0000%
+Fold 6: IS=2022-04~2023-03, OOS=2023-04~2023-06, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 0.5, 'time_stop_bars': 20}, trades=761, win%=45.99, exp=-0.0956%
+Fold 7: IS=2022-07~2023-06, OOS=2023-07~2023-09, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 1.0, 'time_stop_bars': 20}, trades=874, win%=54.92, exp=-0.0602%
+Fold 8: IS=2022-10~2023-09, OOS=2023-10~2023-12, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 1.0, 'time_stop_bars': 20}, trades=945, win%=55.98, exp=-0.0352%
+Fold 9: IS=2023-01~2023-12, OOS=2024-01~2024-03, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 1.0, 'time_stop_bars': 20}, trades=894, win%=53.91, exp=-0.0615%
+Fold 10: IS=2023-04~2024-03, OOS=2024-04~2024-06, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 1.0, 'time_stop_bars': 20}, trades=805, win%=53.79, exp=-0.0496%
+Fold 11: IS=2023-07~2024-06, OOS=2024-07~2024-09, best={'ema_period': 20, 'rsi_low': 40, 'rsi_high': 60, 'sl_atr_mult': 0.5, 'time_stop_bars': 20}, trades=1011, win%=47.18, exp=-0.0614%
+Fold 12: IS=2023-10~2024-09, OOS=2024-10~2024-12, best={'ema_period': 20, 'rsi_low': 40, 'rsi_high': 60, 'sl_atr_mult': 1.0, 'time_stop_bars': 20}, trades=880, win%=54.66, exp=-0.0631%
+Fold 13: IS=2024-01~2024-12, OOS=2025-01~2025-03, best={'ema_period': 20, 'rsi_low': 40, 'rsi_high': 60, 'sl_atr_mult': 0.5, 'time_stop_bars': 20}, trades=966, win%=45.86, exp=-0.0689%
+Fold 14: IS=2024-04~2025-03, OOS=2025-04~2025-06, best={'ema_period': 20, 'rsi_low': 40, 'rsi_high': 60, 'sl_atr_mult': 1.0, 'time_stop_bars': 20}, trades=841, win%=54.58, exp=-0.0414%
+Fold 15: IS=2024-07~2025-06, OOS=2025-07~2025-09, best={'ema_period': 20, 'rsi_low': 40, 'rsi_high': 60, 'sl_atr_mult': 1.0, 'time_stop_bars': 20}, trades=853, win%=55.45, exp=-0.0137%
+Fold 16: IS=2024-10~2025-09, OOS=2025-10~2025-12, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 1.0, 'time_stop_bars': 20}, trades=815, win%=54.97, exp=-0.0283%
+Fold 17: IS=2025-01~2025-12, OOS=2026-01~2026-03, best={'ema_period': 20, 'rsi_low': 35, 'rsi_high': 60, 'sl_atr_mult': 1.0, 'time_stop_bars': 20}, trades=837, win%=54.24, exp=-0.0655%
+Fold 18: IS=2025-04~2026-03, OOS=2026-04~2026-04, best={'ema_period': 20, 'rsi_low': 40, 'rsi_high': 60, 'sl_atr_mult': 0.5, 'time_stop_bars': 20}, trades=217, win%=42.86, exp=-0.1686%
+Walk-Forward Efficiency=1.553
+
+[Monte Carlo]
+final p5/p50/p95=0.21/1.32/8.24
+maxDD p50/p95=99.03%/99.83%
+positive return probability=0.00%
+chart=backtest/pullback_mc.png

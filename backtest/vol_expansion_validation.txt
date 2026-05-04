@@ -1,0 +1,40 @@
+============================================================
+VOLATILITY EXPANSION STRATEGY VALIDATION
+============================================================
+
+[Full Backtest]
+2021-2026: trades=5640 win%=41.67 expectancy=-0.0400% max_dd=93.79% sharpe=-3.420 final=8.4587
+
+[OOS]
+IS  2021-2023: trades=1402 win%=40.44 expectancy=-0.0565% max_dd=66.98% sharpe=-2.455 final=42.9921
+OOS 2024-2026: trades=4229 win%=42.07 expectancy=-0.0345% max_dd=83.73% sharpe=-2.542 final=19.7391
+OOS exits: {'TIME_STOP': 2429, 'BB_MID_SL': 1542, 'TAKE_PROFIT': 258}
+PSR Sharpe > 0: 0.00%
+Bonferroni p-value=1.0000, threshold=0.0056, significant=False
+
+[Walk-Forward]
+Fold 1: IS=2021-01~2021-12, OOS=2022-01~2022-03, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=0, win%=0.00, exp=0.0000%
+Fold 2: IS=2021-04~2022-03, OOS=2022-04~2022-06, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=0, win%=0.00, exp=0.0000%
+Fold 3: IS=2021-07~2022-06, OOS=2022-07~2022-09, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=0, win%=0.00, exp=0.0000%
+Fold 4: IS=2021-10~2022-09, OOS=2022-10~2022-12, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=0, win%=0.00, exp=0.0000%
+Fold 5: IS=2022-01~2022-12, OOS=2023-01~2023-03, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=0, win%=0.00, exp=0.0000%
+Fold 6: IS=2022-04~2023-03, OOS=2023-04~2023-06, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=397, win%=43.83, exp=0.0407%
+Fold 7: IS=2022-07~2023-06, OOS=2023-07~2023-09, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 2.0, 'time_stop_bars': 8}, trades=490, win%=37.14, exp=-0.1246%
+Fold 8: IS=2022-10~2023-09, OOS=2023-10~2023-12, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=566, win%=40.99, exp=-0.0387%
+Fold 9: IS=2023-01~2023-12, OOS=2024-01~2024-03, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=576, win%=45.14, exp=-0.0078%
+Fold 10: IS=2023-04~2024-03, OOS=2024-04~2024-06, best={'bb_period': 20, 'bb_expansion_thresh': 0.25, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=462, win%=40.48, exp=-0.0817%
+Fold 11: IS=2023-07~2024-06, OOS=2024-07~2024-09, best={'bb_period': 20, 'bb_expansion_thresh': 0.25, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=512, win%=43.36, exp=-0.0411%
+Fold 12: IS=2023-10~2024-09, OOS=2024-10~2024-12, best={'bb_period': 20, 'bb_expansion_thresh': 0.25, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.0, 'time_stop_bars': 8}, trades=511, win%=41.88, exp=-0.0325%
+Fold 13: IS=2024-01~2024-12, OOS=2025-01~2025-03, best={'bb_period': 20, 'bb_expansion_thresh': 0.25, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.5, 'time_stop_bars': 8}, trades=387, win%=43.67, exp=-0.0333%
+Fold 14: IS=2024-04~2025-03, OOS=2025-04~2025-06, best={'bb_period': 20, 'bb_expansion_thresh': 0.25, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.5, 'time_stop_bars': 8}, trades=400, win%=43.75, exp=-0.0319%
+Fold 15: IS=2024-07~2025-06, OOS=2025-07~2025-09, best={'bb_period': 20, 'bb_expansion_thresh': 0.15, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.5, 'time_stop_bars': 8}, trades=468, win%=39.10, exp=-0.0820%
+Fold 16: IS=2024-10~2025-09, OOS=2025-10~2025-12, best={'bb_period': 20, 'bb_expansion_thresh': 0.25, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.5, 'time_stop_bars': 8}, trades=409, win%=42.79, exp=-0.0043%
+Fold 17: IS=2025-01~2025-12, OOS=2026-01~2026-03, best={'bb_period': 20, 'bb_expansion_thresh': 0.25, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.5, 'time_stop_bars': 8}, trades=417, win%=43.88, exp=-0.0209%
+Fold 18: IS=2025-04~2026-03, OOS=2026-04~2026-04, best={'bb_period': 20, 'bb_expansion_thresh': 0.2, 'atr_expansion_mult': 1.1, 'tp_bb_mult': 1.5, 'time_stop_bars': 8}, trades=101, win%=44.55, exp=-0.0490%
+Walk-Forward Efficiency=1.521
+
+[Monte Carlo]
+final p5/p50/p95=7.43/19.67/50.92
+maxDD p50/p95=83.57%/93.48%
+positive return probability=0.10%
+chart=backtest/vol_expansion_mc.png

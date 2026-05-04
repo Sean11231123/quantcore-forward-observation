@@ -1,0 +1,928 @@
+{
+  "clean_stats": {
+    "trades": 105,
+    "wins": 60,
+    "win_pct": 57.14285714285714,
+    "expectancy_pct": -0.09997499999999018,
+    "max_dd_pct": 19.256961654425986,
+    "sharpe": -1.177862654808789,
+    "final_balance": 89.13875967011086,
+    "skew": -0.2928757889125893,
+    "kurt": 1.0482264103052221
+  },
+  "static_stats": {
+    "trades": 200,
+    "wins": 115,
+    "win_pct": 57.49999999999999,
+    "expectancy_pct": -0.09372812499998873,
+    "max_dd_pct": 27.22466188088542,
+    "sharpe": -1.529139943467399,
+    "final_balance": 82.27950695477709,
+    "skew": -0.3057308174162683,
+    "kurt": 1.0741109669926838
+  },
+  "clean_counts": {
+    "2021": 0,
+    "2022": 0,
+    "2023": 24,
+    "2024": 38,
+    "2025": 33,
+    "2026": 10
+  },
+  "static_counts": {
+    "2021": 44,
+    "2022": 40,
+    "2023": 34,
+    "2024": 38,
+    "2025": 33,
+    "2026": 11
+  },
+  "extra_by_year": {
+    "2021": 44,
+    "2022": 40,
+    "2023": 10,
+    "2024": 0,
+    "2025": 0,
+    "2026": 1
+  },
+  "extra_by_symbol": {
+    "2021": [
+      {
+        "symbol": "ETHUSDT",
+        "trades": 13,
+        "expectancy_pct": -0.15763846153844863
+      },
+      {
+        "symbol": "BNBUSDT",
+        "trades": 8,
+        "expectancy_pct": -0.006271874999987825
+      },
+      {
+        "symbol": "SOLUSDT",
+        "trades": 8,
+        "expectancy_pct": 0.21236875000001082
+      },
+      {
+        "symbol": "DOGEUSDT",
+        "trades": 6,
+        "expectancy_pct": 0.06660833333334631
+      },
+      {
+        "symbol": "XRPUSDT",
+        "trades": 6,
+        "expectancy_pct": 0.35812916666667566
+      },
+      {
+        "symbol": "ADAUSDT",
+        "trades": 2,
+        "expectancy_pct": -0.2249124999999872
+      },
+      {
+        "symbol": "AVAXUSDT",
+        "trades": 1,
+        "expectancy_pct": -1.0994749999999875
+      }
+    ],
+    "2022": [
+      {
+        "symbol": "ETHUSDT",
+        "trades": 11,
+        "expectancy_pct": -0.14540681818181342
+      },
+      {
+        "symbol": "XRPUSDT",
+        "trades": 8,
+        "expectancy_pct": 0.4310093750000107
+      },
+      {
+        "symbol": "DOGEUSDT",
+        "trades": 7,
+        "expectancy_pct": 0.14990000000001324
+      },
+      {
+        "symbol": "SOLUSDT",
+        "trades": 6,
+        "expectancy_pct": -0.8079541666666508
+      },
+      {
+        "symbol": "NEARUSDT",
+        "trades": 3,
+        "expectancy_pct": -0.5164333333333291
+      },
+      {
+        "symbol": "AVAXUSDT",
+        "trades": 2,
+        "expectancy_pct": -0.22491249999998236
+      },
+      {
+        "symbol": "BNBUSDT",
+        "trades": 2,
+        "expectancy_pct": 0.6496499999999938
+      },
+      {
+        "symbol": "ADAUSDT",
+        "trades": 1,
+        "expectancy_pct": -1.0994749999999858
+      }
+    ]
+  },
+  "availability": {
+    "ADAUSDT": {
+      "original_data_exists_15m": true,
+      "original_data_exists_1h": true,
+      "static_data_exists_15m": true,
+      "static_data_exists_1h": true,
+      "original_first_timestamp_15m": "2023-04-22 22:15:00",
+      "static_first_timestamp_15m": "2021-01-01 00:00:00",
+      "original_first_timestamp_1h": "2023-04-22 23:00:00",
+      "static_first_timestamp_1h": "2021-01-01 00:00:00"
+    },
+    "AVAXUSDT": {
+      "original_data_exists_15m": true,
+      "original_data_exists_1h": true,
+      "static_data_exists_15m": true,
+      "static_data_exists_1h": true,
+      "original_first_timestamp_15m": "2023-04-22 22:15:00",
+      "static_first_timestamp_15m": "2021-01-01 00:00:00",
+      "original_first_timestamp_1h": "2023-04-22 23:00:00",
+      "static_first_timestamp_1h": "2021-01-01 00:00:00"
+    },
+    "BNBUSDT": {
+      "original_data_exists_15m": true,
+      "original_data_exists_1h": true,
+      "static_data_exists_15m": true,
+      "static_data_exists_1h": true,
+      "original_first_timestamp_15m": "2021-01-01 00:00:00",
+      "static_first_timestamp_15m": "2021-01-01 00:00:00",
+      "original_first_timestamp_1h": "2021-01-01 00:00:00",
+      "static_first_timestamp_1h": "2021-01-01 00:00:00"
+    },
+    "DOGEUSDT": {
+      "original_data_exists_15m": true,
+      "original_data_exists_1h": true,
+      "static_data_exists_15m": true,
+      "static_data_exists_1h": true,
+      "original_first_timestamp_15m": "2023-04-22 22:15:00",
+      "static_first_timestamp_15m": "2021-01-01 00:00:00",
+      "original_first_timestamp_1h": "2023-04-22 23:00:00",
+      "static_first_timestamp_1h": "2021-01-01 00:00:00"
+    },
+    "ETHUSDT": {
+      "original_data_exists_15m": true,
+      "original_data_exists_1h": true,
+      "static_data_exists_15m": true,
+      "static_data_exists_1h": true,
+      "original_first_timestamp_15m": "2021-01-01 00:00:00",
+      "static_first_timestamp_15m": "2021-01-01 00:00:00",
+      "original_first_timestamp_1h": "2021-01-01 00:00:00",
+      "static_first_timestamp_1h": "2021-01-01 00:00:00"
+    },
+    "NEARUSDT": {
+      "original_data_exists_15m": true,
+      "original_data_exists_1h": true,
+      "static_data_exists_15m": true,
+      "static_data_exists_1h": true,
+      "original_first_timestamp_15m": "2023-04-22 22:15:00",
+      "static_first_timestamp_15m": "2021-01-01 00:00:00",
+      "original_first_timestamp_1h": "2023-04-22 23:00:00",
+      "static_first_timestamp_1h": "2021-01-01 00:00:00"
+    },
+    "SOLUSDT": {
+      "original_data_exists_15m": true,
+      "original_data_exists_1h": true,
+      "static_data_exists_15m": true,
+      "static_data_exists_1h": true,
+      "original_first_timestamp_15m": "2021-01-01 00:00:00",
+      "static_first_timestamp_15m": "2021-01-01 00:00:00",
+      "original_first_timestamp_1h": "2021-01-01 00:00:00",
+      "static_first_timestamp_1h": "2021-01-01 00:00:00"
+    },
+    "XRPUSDT": {
+      "original_data_exists_15m": true,
+      "original_data_exists_1h": true,
+      "static_data_exists_15m": true,
+      "static_data_exists_1h": true,
+      "original_first_timestamp_15m": "2021-01-01 00:00:00",
+      "static_first_timestamp_15m": "2021-01-01 00:00:00",
+      "original_first_timestamp_1h": "2021-01-01 00:00:00",
+      "static_first_timestamp_1h": "2021-01-01 00:00:00"
+    }
+  },
+  "whitelist_samples": [
+    {
+      "sample_date": "2021-01-02",
+      "original_whitelist": [
+        "ETHUSDT",
+        "XRPUSDT",
+        "BNBUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "XRPUSDT",
+        "LTCUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-02-01",
+      "original_whitelist": [
+        "XRPUSDT",
+        "ETHUSDT",
+        "BNBUSDT"
+      ],
+      "static_whitelist": [
+        "XRPUSDT",
+        "ETHUSDT",
+        "DOGEUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-03-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "ADAUSDT",
+        "BNBUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-04-01",
+      "original_whitelist": [
+        "BNBUSDT",
+        "ETHUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "TRXUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-05-01",
+      "original_whitelist": [
+        "XRPUSDT",
+        "BNBUSDT",
+        "ETHUSDT"
+      ],
+      "static_whitelist": [
+        "XRPUSDT",
+        "ETHUSDT",
+        "BNBUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-06-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "XRPUSDT",
+        "BNBUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-07-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "match": true,
+      "difference_reason_if_known": "match"
+    },
+    {
+      "sample_date": "2021-08-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "match": true,
+      "difference_reason_if_known": "match"
+    },
+    {
+      "sample_date": "2021-09-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "DOTUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-10-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "BNBUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "BNBUSDT"
+      ],
+      "match": true,
+      "difference_reason_if_known": "match"
+    },
+    {
+      "sample_date": "2021-11-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "XRPUSDT",
+        "BNBUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "DOGEUSDT",
+        "SOLUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-12-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "BNBUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-01-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "FTMUSDT",
+        "NEARUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-02-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "FTMUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-03-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "AVAXUSDT",
+        "ADAUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-04-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "BNBUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "AVAXUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-05-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "FTMUSDT",
+        "NEARUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-06-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "ADAUSDT",
+        "SOLUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-07-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "BNBUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "AVAXUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-08-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "OPUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-09-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "SOLUSDT",
+        "NEARUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-10-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "XRPUSDT",
+        "SOLUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "XRPUSDT",
+        "SOLUSDT"
+      ],
+      "match": true,
+      "difference_reason_if_known": "match"
+    },
+    {
+      "sample_date": "2022-11-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "DOGEUSDT",
+        "BNBUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2022-12-01",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "DOGEUSDT",
+        "BNBUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-01-03",
+      "original_whitelist": [
+        "ETHUSDT",
+        "XRPUSDT",
+        "BNBUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "DOGEUSDT",
+        "LTCUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-01-07",
+      "original_whitelist": [
+        "ETHUSDT",
+        "XRPUSDT",
+        "BNBUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "LINKUSDT",
+        "XRPUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-01-14",
+      "original_whitelist": [
+        "ETHUSDT",
+        "XRPUSDT",
+        "BNBUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "LTCUSDT",
+        "BCHUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-02-07",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "ADAUSDT",
+        "DOGEUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-02-10",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "DOGEUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-02-18",
+      "original_whitelist": [
+        "BNBUSDT",
+        "ETHUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-02-24",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "match": true,
+      "difference_reason_if_known": "match"
+    },
+    {
+      "sample_date": "2021-03-09",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "ADAUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-03-18",
+      "original_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "ADAUSDT",
+        "BNBUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    },
+    {
+      "sample_date": "2021-03-28",
+      "original_whitelist": [
+        "BNBUSDT",
+        "ETHUSDT",
+        "XRPUSDT"
+      ],
+      "static_whitelist": [
+        "ETHUSDT",
+        "BNBUSDT",
+        "ADAUSDT"
+      ],
+      "match": false,
+      "difference_reason_if_known": "source_data_or_volume_difference"
+    }
+  ],
+  "regime_check": {
+    "total_extra_trades_2021_2022": 84,
+    "btc_adx_1h_pass_count": 84,
+    "btc_re_pass_count": 84,
+    "c3_pass_count": 84,
+    "avg_btc_adx_1h": 40.16823934528021,
+    "avg_btc_re": 0.29711394016965686
+  },
+  "extra_samples": [
+    {
+      "entry_time": "2021-01-03 12:00:00",
+      "symbol": "ETHUSDT",
+      "btc_adx_1h": 36.5354230857016,
+      "btc_re": 0.3650608980185389,
+      "whitelist_source_date": "2021-01-02",
+      "whitelist_rank": 1,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades"
+    },
+    {
+      "entry_time": "2021-01-03 16:00:00",
+      "symbol": "ETHUSDT",
+      "btc_adx_1h": 33.85535895512644,
+      "btc_re": 0.2482998938284379,
+      "whitelist_source_date": "2021-01-02",
+      "whitelist_rank": 1,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades"
+    },
+    {
+      "entry_time": "2021-01-07 10:45:00",
+      "symbol": "XRPUSDT",
+      "btc_adx_1h": 41.38269542680269,
+      "btc_re": 0.2518760807856709,
+      "whitelist_source_date": "2021-01-06",
+      "whitelist_rank": 3,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades"
+    },
+    {
+      "entry_time": "2021-01-14 13:15:00",
+      "symbol": "ETHUSDT",
+      "btc_adx_1h": 39.05201121326719,
+      "btc_re": 0.2560408966087344,
+      "whitelist_source_date": "2021-01-13",
+      "whitelist_rank": 1,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades"
+    },
+    {
+      "entry_time": "2021-02-07 00:30:00",
+      "symbol": "DOGEUSDT",
+      "btc_adx_1h": 31.195040298209207,
+      "btc_re": 0.3249973446627728,
+      "whitelist_source_date": "2021-02-06",
+      "whitelist_rank": 3,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades; original whitelist did not contain symbol"
+    },
+    {
+      "entry_time": "2021-02-10 00:45:00",
+      "symbol": "BNBUSDT",
+      "btc_adx_1h": 33.711494860834534,
+      "btc_re": 0.3750426510529711,
+      "whitelist_source_date": "2021-02-09",
+      "whitelist_rank": 2,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades"
+    },
+    {
+      "entry_time": "2021-02-18 01:15:00",
+      "symbol": "ETHUSDT",
+      "btc_adx_1h": 41.64175248218476,
+      "btc_re": 0.2001009370780027,
+      "whitelist_source_date": "2021-02-17",
+      "whitelist_rank": 1,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades"
+    },
+    {
+      "entry_time": "2021-02-18 08:15:00",
+      "symbol": "BNBUSDT",
+      "btc_adx_1h": 38.21990366100309,
+      "btc_re": 0.2520912295957425,
+      "whitelist_source_date": "2021-02-17",
+      "whitelist_rank": 2,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades"
+    },
+    {
+      "entry_time": "2021-02-24 08:15:00",
+      "symbol": "BNBUSDT",
+      "btc_adx_1h": 45.4518988394309,
+      "btc_re": 0.217771017966645,
+      "whitelist_source_date": "2021-02-23",
+      "whitelist_rank": 2,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades"
+    },
+    {
+      "entry_time": "2021-03-09 10:00:00",
+      "symbol": "BNBUSDT",
+      "btc_adx_1h": 45.12662331419356,
+      "btc_re": 0.2906596440555588,
+      "whitelist_source_date": "2021-03-08",
+      "whitelist_rank": 2,
+      "reason_static_trade_exists": "static C3+whitelist passed; clean had no 2021/2022 trades"
+    }
+  ],
+  "feature_samples": [
+    {
+      "entry_time": "2021-01-03 12:00:00",
+      "symbol": "ETHUSDT",
+      "original_data_available": true,
+      "original_adx_15m": 47.09218057243655,
+      "static_adx_15m": 47.76942562654304,
+      "original_adx_1h": 33.028933607183845,
+      "static_adx_1h": 34.7775010224464,
+      "original_btc_re": 0.3606693282719193,
+      "static_btc_re": 0.3650608980185389,
+      "original_whitelist_contains_symbol": true,
+      "static_whitelist_contains_symbol": true
+    },
+    {
+      "entry_time": "2021-01-03 16:00:00",
+      "symbol": "ETHUSDT",
+      "original_data_available": true,
+      "original_adx_15m": 57.71106264723289,
+      "static_adx_15m": 59.92030991601477,
+      "original_adx_1h": 43.66573706715208,
+      "static_adx_1h": 45.34809774705497,
+      "original_btc_re": 0.24887346502936433,
+      "static_btc_re": 0.2482998938284379,
+      "original_whitelist_contains_symbol": true,
+      "static_whitelist_contains_symbol": true
+    },
+    {
+      "entry_time": "2021-01-07 10:45:00",
+      "symbol": "XRPUSDT",
+      "original_data_available": true,
+      "original_adx_15m": 38.6870422332604,
+      "static_adx_15m": 37.82201651105888,
+      "original_adx_1h": 55.451231846588406,
+      "static_adx_1h": 54.30858372371861,
+      "original_btc_re": 0.2512510512160805,
+      "static_btc_re": 0.2518760807856709,
+      "original_whitelist_contains_symbol": true,
+      "static_whitelist_contains_symbol": true
+    },
+    {
+      "entry_time": "2021-01-14 13:15:00",
+      "symbol": "ETHUSDT",
+      "original_data_available": true,
+      "original_adx_15m": 28.872574625054018,
+      "static_adx_15m": 30.20558846549289,
+      "original_adx_1h": 24.398382193782243,
+      "static_adx_1h": 24.386768893711395,
+      "original_btc_re": 0.2341121264509787,
+      "static_btc_re": 0.2560408966087344,
+      "original_whitelist_contains_symbol": true,
+      "static_whitelist_contains_symbol": true
+    },
+    {
+      "entry_time": "2021-02-07 00:30:00",
+      "symbol": "DOGEUSDT",
+      "original_data_available": false,
+      "original_adx_15m": null,
+      "static_adx_15m": 37.629719638388906,
+      "original_adx_1h": null,
+      "static_adx_1h": 35.54760898677748,
+      "original_btc_re": null,
+      "static_btc_re": 0.3249973446627728,
+      "original_whitelist_contains_symbol": false,
+      "static_whitelist_contains_symbol": true
+    }
+  ],
+  "static_2023_plus": {
+    "trades": 116,
+    "wins": 64,
+    "win_pct": 55.172413793103445,
+    "expectancy_pct": -0.13444051724136782,
+    "max_dd_pct": 21.020600082202137,
+    "sharpe": -1.657389480905552,
+    "final_balance": 85.1750231575762,
+    "skew": -0.21074760636945292,
+    "kurt": 1.0097956450861671
+  },
+  "clean_2023_plus": {
+    "trades": 105,
+    "wins": 60,
+    "win_pct": 57.14285714285714,
+    "expectancy_pct": -0.09997499999999018,
+    "max_dd_pct": 19.256961654425986,
+    "sharpe": -1.177862654808789,
+    "final_balance": 89.13875967011086,
+    "skew": -0.2928757889125893,
+    "kurt": 1.0482264103052221
+  },
+  "static_year_exp": {
+    "2021": 0.013604545454557299,
+    "2022": -0.0937281249999906,
+    "2023": -0.17346764705881243,
+    "2024": -0.4090309210526208,
+    "2025": 0.013604545454556811,
+    "2026": 0.49063863636365385
+  },
+  "clean_year_exp": {
+    "2021": 0.0,
+    "2022": 0.0,
+    "2023": -0.006271874999990361,
+    "2024": -0.4090309210526219,
+    "2025": 0.01360454545455554,
+    "2026": 0.47473750000001014
+  }
+}

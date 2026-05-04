@@ -1,0 +1,14 @@
+fatal: bad revision 'HEAD'
+2026-05-02 23:33:23 [INFO] TradingEngine: Trading Engine starting in testnet smoke mode
+2026-05-02 23:33:24 [INFO] TradingEngine: REGIME BTC/USDT:USDT: choppy conf=0.75 ADX=19.78 vol=0.28 strategies=[]
+2026-05-02 23:33:24 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
+2026-05-02 23:34:24 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
+2026-05-02 23:35:27 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
+2026-05-02 23:36:24 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
+2026-05-02 23:37:25 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
+2026-05-02 23:38:24 [INFO] TradingEngine: REGIME BTC/USDT:USDT: choppy conf=0.75 ADX=19.78 vol=0.28 strategies=[]
+2026-05-02 23:38:25 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
+2026-05-02 23:39:27 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
+2026-05-02 23:40:29 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
+2026-05-02 23:41:27 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
+2026-05-02 23:42:28 [INFO] TradingEngine: ROUTE BTC/USDT:USDT: choppy -> []
