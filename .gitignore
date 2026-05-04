@@ -216,3 +216,66 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ============================================================
+# QuantCore / Trading Bot security
+# ============================================================
+
+# Environment / secrets
+*.env
+.env.*
+!.env.example
+
+# Google / API credentials
+service_account.json
+google_service_account.json
+credentials.json
+token.json
+*service*account*.json
+*credential*.json
+*credentials*.json
+*token*.json
+
+# Exchange / API key files
+api_keys.json
+keys.json
+secrets.json
+secret.json
+*.key
+*.pem
+
+# Runtime state
+logs/runtime_errors.log
+logs/telegram_review_state.json
+logs/*.tmp
+logs/*.bak
+
+# Keep signal log if you want GitHub backup
+# Do NOT ignore logs/v12_signals.csv
+!logs/v12_signals.csv
+
+# Local market data / downloaded archives
+data/
+*.zip
+*.parquet
+*.feather
+*.h5
+*.hdf5
+
+# Large generated backtest outputs
+backtest/output/*.parquet
+backtest/output/*.feather
+backtest/output/*.h5
+backtest/output/*.hdf5
+backtest/output/*.zip
+
+# Optional: ignore very large CSV outputs, but keep important logs
+# If you want to version all CSVs, comment these out.
+backtest/output/*large*.csv
+backtest/output/*debug*.csv
+
+# OS / editor local files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
