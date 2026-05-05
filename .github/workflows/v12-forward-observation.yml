@@ -2,6 +2,7 @@ name: V12 Forward Observation
 
 on:
   workflow_dispatch:
+  # schedule sync bump
   schedule:
     - cron: "7,22,37,52 * * * *"
 
