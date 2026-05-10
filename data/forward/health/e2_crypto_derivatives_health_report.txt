@@ -1,5 +1,5 @@
 E2 Daily Health Report
-generated_utc: 2026-05-10T23:36:44Z
+generated_utc: 2026-05-10T23:39:41Z
 lookback_hours: 24
 
 data_type: funding
@@ -50,7 +50,7 @@ data_type: mark_index_premium
   longest_missing_gap_hours_if_feasible: 7.871944444444445
   last_successful_timestamp: 2026-05-10T23:35:45Z
 
-recent_health_runs: 10
-duplicate_rows_prevented: 114
+recent_health_runs: 11
+duplicate_rows_prevented: 171
 known_binance_region_block_count: 228
 api_error_count_ex_known_binance_region_block: 6
