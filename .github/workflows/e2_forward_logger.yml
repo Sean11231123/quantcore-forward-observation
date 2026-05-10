@@ -32,7 +32,7 @@ jobs:
 
       - name: Run E2 crypto derivatives forward logger
         run: |
-          python scripts/e2_forward_logger.py --exchange both
+          python scripts/e2_forward_logger.py --exchange binance
 
       - name: Run E2 crypto derivatives health check
         run: |
