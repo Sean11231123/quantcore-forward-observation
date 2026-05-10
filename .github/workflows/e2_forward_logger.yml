@@ -2,6 +2,12 @@ name: E2 Unified Forward Logger
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/e2_*.py"
+      - ".github/workflows/e2_forward_logger.yml"
   schedule:
     - cron: "5 * * * *"
 
