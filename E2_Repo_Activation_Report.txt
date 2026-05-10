@@ -1,0 +1,63 @@
+E2 Repo Activation Report
+
+Activation status:
+E2 REPO-ACTIVE
+
+Important limitation:
+GitHub Actions commit-back is confirmed, but GitHub-hosted runner exchange access is source-limited. Local public Bybit runs succeeded. GitHub runner Bybit/Binance logger attempts did not produce fresh successful exchange rows, but the resilient workflow now records health/failure state and commits health/data changes back to the repo.
+
+Tracked files added or updated:
+- scripts/e2_forward_logger.py
+- scripts/e2_health_check.py
+- scripts/e2_traditional_futures_logger.py
+- scripts/e2_unified_health_check.py
+- .github/workflows/e2_forward_logger.yml
+- .github/workflows/e2_unified_forward_logger_proposed.yml
+- docs/e2_forward_logger.md
+- docs/e2_unified_forward_logger.md
+- docs/e2_traditional_futures_data_sources.md
+- e2_traditional_futures_data_source_audit.txt
+- data/forward/crypto_derivatives/funding/funding_2026_05.csv
+- data/forward/crypto_derivatives/open_interest/open_interest_2026_05.csv
+- data/forward/crypto_derivatives/mark_index_premium/mark_index_premium_2026_05.csv
+- data/forward/crypto_derivatives/health/e2_health_2026_05.csv
+- data/forward/health/e2_crypto_derivatives_health_report.txt
+- data/forward/health/e2_traditional_futures_health_report.txt
+- data/forward/health/e2_unified_daily_health_report.txt
+- data/forward/traditional_futures/metadata/traditional_futures_logger_metadata.json
+
+Commits:
+- 60a8b24ff68343f93c2d7e134e83d9013bc19036 - Add E2 forward logger infrastructure
+- 1ed769fdc6ddbb9a6af67d6924c054623ba44fd6 - Enable E2 workflow push validation
+- 09fd2035673d18b7902fcc3566d768cb615e30a2 - Use E2 fallback source in workflow
+- 8d93bb7c46df7488b0852a77963ddb168518f66c - Use Binance fallback for E2 workflow validation
+- 27d77c29d506dda0cd4d18014e2a049034cbc489 - Record E2 workflow failures in health
+- 661d03df6fc1b8ede8580379f6deb6f9f5a942f7 - Update E2 derivatives forward logs
+
+Push status:
+Pushed to origin/main successfully.
+
+Workflow status:
+- E2 Unified Forward Logger run 25633278745 completed successfully.
+- Workflow URL: https://github.com/Sean11231123/quantcore-forward-observation/actions/runs/25633278745
+- Steps completed: checkout, Python setup, dependency install, crypto derivatives logger, crypto health check, unified health check, commit E2 forward data.
+
+Commit-back status:
+Confirmed. The workflow created commit 661d03df6fc1b8ede8580379f6deb6f9f5a942f7 with updated E2 forward logs / health.
+
+Health check status:
+- Local unified health check ran successfully and produced data/forward/health/e2_unified_daily_health_report.txt.
+- GitHub workflow health check ran and committed updated health output.
+- Final health status is WARNING because FTM_USDT is missing from Bybit data and traditional futures logging is conditional pending Yahoo Finance ToS confirmation.
+
+Local validation:
+- Python compile passed for E2 scripts.
+- Local Bybit dry run succeeded with 18/19 symbols; FTM_USDT failed.
+- Local Bybit append wrote 57 rows.
+- Duplicate prevention test prevented 57 duplicate rows on repeated run.
+
+GitHub Actions permissions:
+Commit-back succeeded, which confirms the workflow has effective repository contents write permission.
+
+Final activation status:
+E2 REPO-ACTIVE

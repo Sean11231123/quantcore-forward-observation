@@ -1,0 +1,89 @@
+E2 Unified Forward Logger Completion Report
+
+Final classification:
+E2 REPO-ACTIVE / FUTURES PARTIAL
+
+Repo-active status:
+Yes. E2 infrastructure was committed and pushed to origin/main.
+
+GitHub Actions commit-back:
+Works. Workflow run 25633278745 completed successfully and produced commit-back commit 661d03df6fc1b8ede8580379f6deb6f9f5a942f7.
+
+Crypto derivatives logger:
+- Local Bybit run works.
+- Local Bybit dry run returned 18/19 successful symbols for funding, OI, and mark/index/premium.
+- FTM_USDT failed on Bybit and is recorded as missing.
+- One local append wrote 57 rows under data/forward/crypto_derivatives.
+- Repeated local run prevented 57 duplicate rows.
+- GitHub-hosted runner exchange access is source-limited; previous Bybit/Binance logger attempts failed at the logger step. The workflow now continues to health reporting and commit-back so failures are visible rather than silent.
+
+Traditional futures source usability:
+Conditional only.
+
+Yahoo Finance ToS caveat:
+Exists. Automated unattended Yahoo Finance downloading was not confirmed as clearly permitted by this audit. The traditional futures logger therefore refuses production fetches unless invoked with --confirm-yahoo-tos.
+
+Traditional futures logger status:
+Conditional prototype created:
+- scripts/e2_traditional_futures_logger.py
+
+The script writes metadata/health in conditional mode and does not fetch Yahoo data unless user ToS confirmation is supplied.
+
+Futures symbols configured:
+- ES=F
+- NQ=F
+- RTY=F
+- CL=F
+- GC=F
+- HG=F
+- ZN=F
+- ZB=F
+- BTC=F
+- ETH=F
+
+Futures symbols succeeded:
+None, because production fetch was not run without user ToS confirmation.
+
+Futures symbols failed:
+None from live fetch, because production fetch was intentionally not run.
+
+Continuous futures limitation:
+Yahoo Finance futures symbols are continuous/front-month proxy symbols. They may roll at contract expiry and may not be back-adjusted. They are acceptable only as broad cross-asset risk proxy data.
+
+Paid data:
+No paid data was used.
+No purchase was made.
+No credentials were required.
+
+Strategy / outcome testing:
+No strategy logic was added.
+No outcome test was run.
+No forward returns were calculated.
+No alpha labels were created.
+No crypto/futures return merge was performed.
+No V12 integration was added.
+No backtest, SL/TP/BE, equity curve, or signal generation was performed.
+
+Files created / modified:
+- scripts/e2_forward_logger.py
+- scripts/e2_health_check.py
+- scripts/e2_traditional_futures_logger.py
+- scripts/e2_unified_health_check.py
+- .github/workflows/e2_forward_logger.yml
+- .github/workflows/e2_unified_forward_logger_proposed.yml
+- docs/e2_forward_logger.md
+- docs/e2_unified_forward_logger.md
+- docs/e2_traditional_futures_data_sources.md
+- e2_traditional_futures_data_source_audit.txt
+- E2_Repo_Activation_Report.txt
+- E2_Unified_Forward_Logger_Completion_Report.txt
+- data/forward/crypto_derivatives/*
+- data/forward/health/*
+- data/forward/traditional_futures/metadata/traditional_futures_logger_metadata.json
+
+Current recommended next action:
+Review Yahoo Finance usage terms. If acceptable, run:
+
+python scripts/e2_traditional_futures_logger.py --confirm-yahoo-tos --dry-run
+
+Then decide whether to enable the proposed futures workflow manually.
