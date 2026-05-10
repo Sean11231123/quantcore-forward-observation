@@ -1,34 +1,56 @@
 E2 Daily Health Report
-generated_utc: 2026-05-10T23:03:58Z
+generated_utc: 2026-05-10T23:36:44Z
 lookback_hours: 24
 
 data_type: funding
-  rows_collected_last_24h: 18
-  expected_rows_last_24h: 456
-  coverage_pct: 0.0395
-  missing_symbols: FTM_USDT
-  error_rows: 115
-  longest_missing_gap_hours_if_feasible: 0.0
-  last_successful_timestamp: 2026-05-10T15:43:26Z
+  rows_collected_last_24h: 36
+  expected_rows_last_24h: 432
+  coverage_pct: 0.0833
+  production_exchange: bybit
+  known_missing_symbols: FTM_USDT
+  bybit_success_rows: 36
+  bybit_error_rows: 2
+  binance_success_rows: 0
+  binance_error_rows: 114
+  known_binance_region_block_count: 114
+  missing_symbols: 
+  error_rows_ex_known_binance_region_block: 2
+  longest_missing_gap_hours_if_feasible: 7.871944444444445
+  last_successful_timestamp: 2026-05-10T23:35:45Z
 
 data_type: open_interest
-  rows_collected_last_24h: 18
-  expected_rows_last_24h: 456
-  coverage_pct: 0.0395
-  missing_symbols: FTM_USDT
-  error_rows: 1
-  longest_missing_gap_hours_if_feasible: 0.0
-  last_successful_timestamp: 2026-05-10T15:43:26Z
+  rows_collected_last_24h: 36
+  expected_rows_last_24h: 432
+  coverage_pct: 0.0833
+  production_exchange: bybit
+  known_missing_symbols: FTM_USDT
+  bybit_success_rows: 36
+  bybit_error_rows: 2
+  binance_success_rows: 0
+  binance_error_rows: 0
+  known_binance_region_block_count: 0
+  missing_symbols: 
+  error_rows_ex_known_binance_region_block: 2
+  longest_missing_gap_hours_if_feasible: 7.871944444444445
+  last_successful_timestamp: 2026-05-10T23:35:45Z
 
 data_type: mark_index_premium
-  rows_collected_last_24h: 18
-  expected_rows_last_24h: 456
-  coverage_pct: 0.0395
-  missing_symbols: FTM_USDT
-  error_rows: 115
-  longest_missing_gap_hours_if_feasible: 0.0
-  last_successful_timestamp: 2026-05-10T15:43:26Z
+  rows_collected_last_24h: 36
+  expected_rows_last_24h: 432
+  coverage_pct: 0.0833
+  production_exchange: bybit
+  known_missing_symbols: FTM_USDT
+  bybit_success_rows: 36
+  bybit_error_rows: 2
+  binance_success_rows: 0
+  binance_error_rows: 114
+  known_binance_region_block_count: 114
+  missing_symbols: 
+  error_rows_ex_known_binance_region_block: 2
+  longest_missing_gap_hours_if_feasible: 7.871944444444445
+  last_successful_timestamp: 2026-05-10T23:35:45Z
 
-recent_health_runs: 8
-duplicate_rows_prevented: 57
-api_error_count: 231
+recent_health_runs: 10
+duplicate_rows_prevented: 114
+known_binance_region_block_count: 228
+api_error_count_ex_known_binance_region_block: 6

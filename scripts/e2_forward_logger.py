@@ -368,6 +368,7 @@ def rows_for_symbol(symbol: str, fetch_ts: str, fetch_bucket_ts: str, prefer_exc
 
 
 def failure_row(fetch_ts: str, data_ts: str, exchange: str, symbol: str, raw: str, data_type: str, error: str, source: str) -> dict[str, Any]:
+    error = classify_error(exchange, source, error)
     base = {
         "fetch_timestamp_utc": fetch_ts,
         "data_timestamp_utc": data_ts,
@@ -385,6 +386,13 @@ def failure_row(fetch_ts: str, data_ts: str, exchange: str, symbol: str, raw: st
     if data_type == "mark_index_premium":
         return {**base, "mark_price": "", "index_price": "", "premium_abs": "", "premium_pct": ""}
     return base
+
+
+def classify_error(exchange: str, source: str, error: str) -> str:
+    normalized = str(error or "")
+    if exchange == "binance" and source == "binance_fapi_premiumIndex" and "451" in normalized:
+        return "known_binance_region_block"
+    return normalized
 
 
 def write_health(fetch_ts: str, stats: RunStats, started: float, notes: str) -> Path:

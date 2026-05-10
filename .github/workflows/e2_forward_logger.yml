@@ -2,6 +2,16 @@ name: E2 Unified Forward Logger
 
 on:
   workflow_dispatch:
+    inputs:
+      exchange:
+        description: "Manual diagnostic exchange mode. Scheduled production always defaults to bybit."
+        required: false
+        default: "bybit"
+        type: choice
+        options:
+          - bybit
+          - binance
+          - both
   push:
     branches:
       - main
@@ -32,8 +42,10 @@ jobs:
 
       - name: Run E2 crypto derivatives forward logger
         continue-on-error: true
+        env:
+          E2_EXCHANGE: ${{ github.event_name == 'workflow_dispatch' && inputs.exchange || 'bybit' }}
         run: |
-          python scripts/e2_forward_logger.py --exchange binance
+          python scripts/e2_forward_logger.py --exchange "$E2_EXCHANGE"
 
       - name: Run E2 crypto derivatives health check
         run: |

@@ -1,0 +1,84 @@
+E2 Binance 451 Production Fix Report
+
+Task type:
+Phase 2 scoped infrastructure correctness fix.
+
+Strict boundary:
+No strategy research, outcome testing, alpha testing, forward returns, V12 modification, threshold optimization, paid data, or futures production activation was performed.
+
+Problem confirmed:
+The active workflow was running:
+
+python scripts/e2_forward_logger.py --exchange binance
+
+Scheduled GitHub Actions runs were therefore using Binance as the production source. Binance futures API calls from GitHub-hosted runners produced HTTP Error 451 rows for all symbols.
+
+Fix applied:
+1. Scheduled production workflow now defaults to Bybit only.
+2. workflow_dispatch now exposes a manual diagnostic exchange input with default bybit and choices bybit/binance/both.
+3. Binance and both are retained only for manual/local diagnostics.
+4. Binance HTTP 451 rows are classified as known_binance_region_block.
+5. Crypto health now reports:
+   - production_exchange: bybit
+   - production_eligible_symbols: 18
+   - known_missing_symbols: FTM_USDT
+   - expected_rows_last_24h: 432 for hourly 18-symbol production mode
+   - bybit_success_rows
+   - bybit_error_rows
+   - binance_success_rows
+   - binance_error_rows
+   - known_binance_region_block_count
+   - stale_hours_bybit
+6. Stale Bybit data warning/blocking logic was added:
+   - >2 expected intervals: WARNING
+   - >6 expected intervals: BLOCKED
+
+Files modified:
+- .github/workflows/e2_forward_logger.yml
+- scripts/e2_forward_logger.py
+- scripts/e2_health_check.py
+- scripts/e2_unified_health_check.py
+- data/forward/health/e2_crypto_derivatives_health_report.txt
+- data/forward/health/e2_unified_daily_health_report.txt
+
+Validation performed:
+1. Python compile:
+   Passed for scripts/e2_forward_logger.py, scripts/e2_health_check.py, scripts/e2_unified_health_check.py.
+
+2. Local Bybit dry run:
+   Command: python scripts/e2_forward_logger.py --exchange bybit --dry-run
+   Result: 18/19 symbols succeeded for funding, OI, and mark/index/premium.
+   Known failure: FTM_USDT with Bybit empty ticker list.
+
+3. Local Bybit safe real run:
+   Command: python scripts/e2_forward_logger.py --exchange bybit
+   Result: rows_written = 57.
+   Fresh Bybit timestamp: 2026-05-10T23:35:45Z.
+
+4. Duplicate prevention:
+   Repeated Bybit run prevented 57 duplicate rows and wrote 0 duplicate rows.
+
+5. Health check:
+   Unified health check ran successfully.
+   Final status: WARNING.
+   Reason: traditional futures module remains conditional pending Yahoo ToS confirmation.
+   Crypto production Bybit data is fresh.
+
+Current health values:
+- production_exchange: bybit
+- production_eligible_symbols: 18
+- known_missing_symbols: FTM_USDT
+- expected_rows_last_24h: 432
+- bybit_success_rows_last_24h: 36 per crypto data type
+- binance_error_rows: 114 for funding and mark/index/premium
+- known_binance_region_block_count: 114 for funding and mark/index/premium
+- missing_symbols: none among production-eligible symbols
+- stale_hours_bybit: approximately 0.02 at validation time
+
+Interpretation:
+Binance is confirmed unsuitable as scheduled production source from GitHub Actions due to region block behavior.
+Bybit is restored as the scheduled production source.
+Historical Binance 451 rows are preserved but classified as known_binance_region_block and separated from production health.
+
+Final classification:
+E2 WARNING — Bybit production source fixed, expected rows correct, latest timestamp fresh, with known limitation FTM_USDT missing and futures module still conditional.
