@@ -31,6 +31,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run E2 crypto derivatives forward logger
+        continue-on-error: true
         run: |
           python scripts/e2_forward_logger.py --exchange binance
 
