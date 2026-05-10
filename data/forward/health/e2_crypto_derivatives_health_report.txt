@@ -1,5 +1,5 @@
 E2 Daily Health Report
-generated_utc: 2026-05-10T19:21:07Z
+generated_utc: 2026-05-10T21:02:55Z
 lookback_hours: 24
 
 data_type: funding
@@ -7,7 +7,7 @@ data_type: funding
   expected_rows_last_24h: 456
   coverage_pct: 0.0395
   missing_symbols: FTM_USDT
-  error_rows: 58
+  error_rows: 77
   longest_missing_gap_hours_if_feasible: 0.0
   last_successful_timestamp: 2026-05-10T15:43:26Z
 
@@ -25,10 +25,10 @@ data_type: mark_index_premium
   expected_rows_last_24h: 456
   coverage_pct: 0.0395
   missing_symbols: FTM_USDT
-  error_rows: 58
+  error_rows: 77
   longest_missing_gap_hours_if_feasible: 0.0
   last_successful_timestamp: 2026-05-10T15:43:26Z
 
-recent_health_runs: 5
+recent_health_runs: 6
 duplicate_rows_prevented: 57
-api_error_count: 117
+api_error_count: 155
