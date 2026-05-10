@@ -64,6 +64,13 @@ Validation performed:
    Reason: traditional futures module remains conditional pending Yahoo ToS confirmation.
    Crypto production Bybit data is fresh.
 
+6. GitHub Actions validation:
+   Push-triggered workflow run 25642930748 completed successfully after the fix.
+   Workflow URL: https://github.com/Sean11231123/quantcore-forward-observation/actions/runs/25642930748
+   Successful steps: logger, crypto health check, unified health check, commit-back.
+   Commit-back commit: ca191c1991207b7487a68106f40e3644c11b926b.
+   Note: the validation run occurred in the same hour bucket as the local Bybit append, so it committed health updates and duplicate-prevention state rather than new market rows.
+
 Current health values:
 - production_exchange: bybit
 - production_eligible_symbols: 18
