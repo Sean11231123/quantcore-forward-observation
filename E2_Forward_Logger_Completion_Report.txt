@@ -1,0 +1,130 @@
+E2 Forward Logger Completion Report
+
+Final status: E2 PARTIAL
+
+Reason for PARTIAL:
+The core logger, health check, documentation, and GitHub Actions workflow are implemented and tested. Public Bybit endpoints worked for 18 / 19 E2 symbols. FTM_USDT is unavailable on Bybit public linear ticker data during validation and is logged as a handled partial failure. The GitHub Actions workflow is ready, but repo-side Actions permissions must allow contents: write for commit-back to work.
+
+Files created / modified:
+- scripts/e2_forward_logger.py
+- scripts/e2_health_check.py
+- .github/workflows/e2_forward_logger.yml
+- docs/e2_forward_logger.md
+- data/derivatives_forward/funding/funding_2026_05.csv
+- data/derivatives_forward/open_interest/open_interest_2026_05.csv
+- data/derivatives_forward/mark_index_premium/mark_index_premium_2026_05.csv
+- data/derivatives_forward/health/e2_health_2026_05.csv
+- data/derivatives_forward/health/e2_daily_health_report.txt
+- E2_Forward_Logger_Completion_Report.txt
+
+Data sources used:
+- Primary: Bybit public v5 market ticker endpoint.
+- Optional fallback mode implemented: Binance public USD-M premium index endpoint for funding, mark, index, and premium.
+
+Endpoints used:
+- Bybit: https://api.bybit.com/v5/market/tickers?category=linear&symbol=<SYMBOL>
+- Binance fallback: https://fapi.binance.com/fapi/v1/premiumIndex?symbol=<SYMBOL>
+
+Symbols covered:
+- Expected E2 universe: 19 non-BTC symbols.
+- config.py SYMBOLS matched the E2 19-symbol universe after BTC exclusion.
+- Successful Bybit validation symbols: 18 / 19.
+- Missing Bybit symbol during test: FTM_USDT.
+
+Fields collected:
+- Funding: fetch_timestamp_utc, data_timestamp_utc, exchange, symbol, raw_exchange_symbol, funding_rate, next_funding_time_utc, mark_price_if_available, request_success, error_message, source_name.
+- Open interest: fetch_timestamp_utc, data_timestamp_utc, exchange, symbol, raw_exchange_symbol, open_interest, open_interest_value_usd_if_available, request_success, error_message, source_name.
+- Mark / index / premium: fetch_timestamp_utc, data_timestamp_utc, exchange, symbol, raw_exchange_symbol, mark_price, index_price, premium_abs, premium_pct, request_success, error_message, source_name.
+- Health: health_timestamp_utc, run_id, expected_symbol_count, successful_symbol_count, failed_symbol_count, funding_success_count, oi_success_count, mark_index_success_count, missing_symbols, failed_symbols, duplicate_rows_prevented, total_rows_written, run_duration_seconds, overall_status, notes.
+
+Schedule implemented:
+- GitHub Actions workflow runs hourly at minute 5 UTC.
+- Manual workflow dispatch is enabled.
+- Local CLI can also be scheduled externally.
+
+Output paths:
+- data/derivatives_forward/funding/
+- data/derivatives_forward/open_interest/
+- data/derivatives_forward/mark_index_premium/
+- data/derivatives_forward/health/
+
+Duplicate prevention method:
+- Monthly CSVs are append-only.
+- New rows are skipped if an existing row has the same exchange, symbol, data_timestamp_utc, and source_name.
+- For Bybit ticker snapshots, where no native data timestamp is provided, data_timestamp_utc is the UTC hour bucket, e.g. YYYY-MM-DDTHH:00:00Z.
+- Validation repeated the same-hour logger run after this fix: 57 duplicates prevented, 0 rows written.
+- Note: two earlier validation rows were created before the hour-bucket fix. They were left untouched to respect append-only storage.
+
+Timestamp handling:
+- All timestamps are UTC ISO strings.
+- Exchange millisecond timestamps are converted to UTC ISO when available.
+- If no native timestamp is available, data_timestamp_utc uses the fetch hour bucket for duplicate safety.
+- fetch_timestamp_utc records the exact UTC fetch time.
+
+Error handling:
+- Per-symbol failures do not stop the run.
+- Per-data-type failures are logged in the row and health CSV.
+- HTTP calls use limited retries with short backoff.
+- No interpolation, forward fill, or synthetic values are created.
+- If all endpoints fail, the logger exits nonzero after printing a JSON summary.
+
+Health check behavior:
+- scripts/e2_health_check.py reports rows collected in the last N hours, expected rows, coverage percentage by data type, missing symbols, error rows, duplicate count, longest observed timestamp gap if feasible, and latest successful timestamp.
+- It writes data/derivatives_forward/health/e2_daily_health_report.txt and prints the same summary.
+
+Test run result:
+- Dry run with Bybit public endpoints succeeded after network approval.
+- Real append run wrote 57 rows: 18 funding, 18 open_interest, 18 mark_index_premium, and 3 failure rows for FTM_USDT.
+- Repeated same-hour run after duplicate fix wrote 0 data rows and prevented 57 duplicate rows.
+- Non-writing `--exchange both` dry run succeeded: Binance fallback restored FTMUSDT funding and mark/index/premium coverage, while FTMUSDT open interest remained unavailable because Binance OI is intentionally not part of E2.
+- Health check generated successfully.
+
+Sample row count:
+- funding_2026_05.csv contains validation rows for Bybit funding.
+- open_interest_2026_05.csv contains validation rows for Bybit open interest.
+- mark_index_premium_2026_05.csv contains validation rows for mark, index, premium_abs, and premium_pct.
+- e2_health_2026_05.csv contains validation health rows.
+
+Missing symbols or endpoints:
+- FTM_USDT failed on Bybit for funding, OI, and mark/index/premium during validation.
+- Binance fallback is implemented for funding and mark/index/premium, but not Binance OI.
+- No private API key is required.
+
+GitHub Actions workflow:
+- Created .github/workflows/e2_forward_logger.yml.
+- It installs dependencies, runs the logger, runs the health check, and commits changed CSV files back to the repository.
+- Commit-back is configured with contents: write permissions in the workflow.
+- Repository settings must allow GitHub Actions write permissions.
+
+Known limitations:
+- E2 does not log liquidation streams.
+- E2 does not log order books or book depth.
+- E2 does not log long/short ratio.
+- E2 does not integrate paid vendors.
+- E2 does not backfill historical data.
+- E2 does not clean or repair previously written rows.
+- Bybit ticker snapshots may not provide exchange-native data timestamps.
+- FTM_USDT requires fallback handling or acceptance as missing in Bybit-only mode.
+
+Validation checklist:
+- Script runs without crashing: PASS.
+- Rows are written for available symbols: PASS.
+- Health report is generated: PASS.
+- Duplicate prevention works on repeated run: PASS.
+- Missing endpoint errors are handled gracefully: PASS.
+- Timestamps are UTC: PASS.
+- premium_pct is computed only when index_price > 0: PASS.
+- No private API key required: PASS.
+- No trading endpoint used: PASS.
+
+Explicit non-strategy boundary:
+- No strategy logic added.
+- No V12 integration added.
+- No live trading logic added.
+- No liquidation logging added.
+- No order book logging added.
+- No signal generation added.
+- No backtest or outcome test added.
+
+Next recommended action:
+Enable the GitHub Actions workflow in repository settings with contents: write permission, then let it run hourly for a few days. Review data/derivatives_forward/health/e2_daily_health_report.txt for missing symbols and decide separately whether E2 should run Bybit-only or Bybit plus Binance fallback for FTMUSDT coverage.

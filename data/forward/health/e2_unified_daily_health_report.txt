@@ -1,0 +1,30 @@
+E2 Unified Daily Health Report
+timestamp: 2026-05-10T15:43:49Z
+
+Crypto derivatives module
+- funding:
+  latest_data_timestamp: 2026-05-10T15:43:26Z
+  symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
+  missing_symbols: FTM_USDT
+  duplicate_count: 0
+- open_interest:
+  latest_data_timestamp: 2026-05-10T15:43:26Z
+  symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
+  missing_symbols: FTM_USDT
+  duplicate_count: 0
+- mark_index_premium:
+  latest_data_timestamp: 2026-05-10T15:43:26Z
+  symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
+  missing_symbols: FTM_USDT
+  duplicate_count: 0
+
+Traditional futures module
+- traditional futures daily CSV missing; module is conditional until user ToS confirmation
+
+warning list:
+- crypto funding missing symbols: FTM_USDT
+- crypto open_interest missing symbols: FTM_USDT
+- crypto mark_index_premium missing symbols: FTM_USDT
+- traditional futures daily CSV missing; module is conditional until user ToS confirmation
+
+final status: WARNING

@@ -1,0 +1,9 @@
+E2 Traditional Futures Logger Health
+timestamp_utc: 2026-05-10T15:39:03Z
+status: WARNING
+source: Yahoo Finance chart endpoint
+rows_written: 0
+duplicates_prevented: 0
+symbols_succeeded: 
+symbols_failed: {}
+notes: FUTURES LOGGER CONDITIONAL - USER ToS CONFIRMATION REQUIRED. Yahoo Finance automated daily retrieval was not executed.

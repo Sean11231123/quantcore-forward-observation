@@ -1,0 +1,56 @@
+E2 Traditional Futures Data Source Audit
+
+Task type: Phase 2 infrastructure / data-source expansion only.
+No strategy Track, outcome test, alpha research, crypto return merge, backtest, signal generation, V12 modification, or paid data purchase was performed.
+
+Summary recommendation:
+Yahoo Finance futures symbols are usable only conditionally as free daily broad cross-asset proxy data.
+FUTURES LOGGER CONDITIONAL — USER ToS CONFIRMATION REQUIRED.
+
+Yahoo Finance
+- Candidate symbols reviewed:
+  ES=F, NQ=F, RTY=F, CL=F, GC=F, HG=F, ZN=F, ZB=F, BTC=F, ETH=F.
+- Availability:
+  Public Yahoo Finance pages show futures quote coverage for ES=F, NQ=F, RTY=F and other futures. Search/indexed pages confirm BTC=F exists as CME Bitcoin futures. ETH=F should still be verified by live fetch before activation; do not assume it works.
+- Data frequency:
+  Daily OHLCV is feasible through Yahoo-style chart history endpoints if user confirms usage is acceptable.
+- Historical coverage:
+  Public pages show historical chart ranges, but exact complete depth by symbol must be confirmed by logger fetch. Continuous futures depth may vary by symbol.
+- Free or paid:
+  No payment is required for basic public Yahoo Finance pages/endpoints, but usage terms are not explicit enough here to activate unattended production logging without user confirmation.
+- API/library requirement:
+  No third-party library is required by the prototype. It uses the Yahoo chart endpoint through Python urllib.
+- ToS caveat:
+  Yahoo Finance usage is governed by Yahoo terms. Automated unattended downloading is not clearly authorized by this audit. The logger therefore requires an explicit --confirm-yahoo-tos flag and is not added to the active hourly workflow.
+- Rollover limitation:
+  ES=F, NQ=F, GC=F, CL=F, BTC=F and similar symbols are continuous/front-month proxy symbols. They can roll at contract expiry and may not be back-adjusted. Daily closes can contain rollover artifacts. They are acceptable only as broad cross-asset risk proxy data, not precise price-level research across rolls.
+- Recommendation:
+  usable only conditionally.
+
+CME delayed quotes
+- Source nature:
+  CME delayed quote pages are official reference-style quote pages.
+- Delay:
+  CME states delayed quotes are delayed by at least 10 minutes.
+- Limitation:
+  Public delayed quote pages are not a clean automated historical daily OHLCV API for QuantCore. CME also warns website market data is reference-only and not a substitute for proper market data feeds.
+- Recommendation:
+  documentation/reference source only for now.
+
+Databento
+- Source nature:
+  Professional market data vendor with futures coverage and historical products.
+- Free or paid:
+  Paid or credit-based access; no purchase was made.
+- Strength:
+  More appropriate than Yahoo for precise futures research, historical contract-level data, and reproducible roll logic.
+- Limitation:
+  Not used in E2 because this task forbids paid data purchase.
+- Recommendation:
+  optional paid future source.
+
+Other free sources
+- No other free, stable, no-account source was confirmed that is clearly superior to Yahoo for daily futures proxy logging.
+
+Phase B conclusion
+Traditional futures data can be integrated under E2 as a conditional proxy-data module, but production activation should wait for user confirmation of Yahoo Finance usage terms.

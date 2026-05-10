@@ -1,0 +1,34 @@
+E2 Daily Health Report
+generated_utc: 2026-05-10T15:43:32Z
+lookback_hours: 24
+
+data_type: funding
+  rows_collected_last_24h: 18
+  expected_rows_last_24h: 456
+  coverage_pct: 0.0395
+  missing_symbols: FTM_USDT
+  error_rows: 1
+  longest_missing_gap_hours_if_feasible: 0.0
+  last_successful_timestamp: 2026-05-10T15:43:26Z
+
+data_type: open_interest
+  rows_collected_last_24h: 18
+  expected_rows_last_24h: 456
+  coverage_pct: 0.0395
+  missing_symbols: FTM_USDT
+  error_rows: 1
+  longest_missing_gap_hours_if_feasible: 0.0
+  last_successful_timestamp: 2026-05-10T15:43:26Z
+
+data_type: mark_index_premium
+  rows_collected_last_24h: 18
+  expected_rows_last_24h: 456
+  coverage_pct: 0.0395
+  missing_symbols: FTM_USDT
+  error_rows: 1
+  longest_missing_gap_hours_if_feasible: 0.0
+  last_successful_timestamp: 2026-05-10T15:43:26Z
+
+recent_health_runs: 1
+duplicate_rows_prevented: 0
+api_error_count: 3

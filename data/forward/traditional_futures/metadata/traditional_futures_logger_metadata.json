@@ -1,0 +1,22 @@
+{
+  "timestamp_utc": "2026-05-10T15:39:03Z",
+  "status": "CONDITIONAL",
+  "source": "Yahoo Finance chart endpoint",
+  "symbols_requested": [
+    "BTC=F",
+    "CL=F",
+    "ES=F",
+    "ETH=F",
+    "GC=F",
+    "HG=F",
+    "NQ=F",
+    "RTY=F",
+    "ZB=F",
+    "ZN=F"
+  ],
+  "symbols_succeeded": [],
+  "symbols_failed": {},
+  "duplicates_prevented": 0,
+  "notes": "FUTURES LOGGER CONDITIONAL - USER ToS CONFIRMATION REQUIRED. Yahoo Finance automated daily retrieval was not executed.",
+  "governance": "Infrastructure only. No crypto merge, return calculation, signal, alpha label, or backtest."
+}

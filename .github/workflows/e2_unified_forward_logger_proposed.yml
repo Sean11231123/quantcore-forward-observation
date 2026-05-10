@@ -1,0 +1,47 @@
+name: E2 Unified Forward Logger Proposed Futures Extension
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_yahoo_tos:
+        description: "Type YES only after user confirms Yahoo Finance automated usage is acceptable."
+        required: true
+        default: "NO"
+
+jobs:
+  conditional-traditional-futures:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run conditional futures logger
+        if: ${{ github.event.inputs.confirm_yahoo_tos == 'YES' }}
+        run: |
+          python scripts/e2_traditional_futures_logger.py --confirm-yahoo-tos
+
+      - name: Refuse futures logger without ToS confirmation
+        if: ${{ github.event.inputs.confirm_yahoo_tos != 'YES' }}
+        run: |
+          python scripts/e2_traditional_futures_logger.py
+
+      - name: Run unified health check
+        run: |
+          python scripts/e2_unified_health_check.py --hours 24
+
+      - name: Commit conditional futures data
+        run: |
+          git config user.name "quantcore-bot"
+          git config user.email "quantcore-bot@users.noreply.github.com"
+          git add -f data/forward/traditional_futures/**/*.csv || true
+          git add -f data/forward/traditional_futures/metadata/*.json || true
+          git add -f data/forward/health/*.txt || true
+          git diff --cached --quiet || git commit -m "Update E2 traditional futures forward logs"
+          git push
