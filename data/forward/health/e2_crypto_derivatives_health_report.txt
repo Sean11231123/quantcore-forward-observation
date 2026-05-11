@@ -1,5 +1,5 @@
 E2 Daily Health Report
-generated_utc: 2026-05-11T00:33:51Z
+generated_utc: 2026-05-11T04:23:45Z
 lookback_hours: 24
 
 data_type: funding
@@ -9,12 +9,12 @@ data_type: funding
   production_exchange: bybit
   known_missing_symbols: FTM_USDT
   bybit_success_rows: 36
-  bybit_error_rows: 21
+  bybit_error_rows: 40
   binance_success_rows: 0
   binance_error_rows: 114
   known_binance_region_block_count: 114
   missing_symbols: 
-  error_rows_ex_known_binance_region_block: 21
+  error_rows_ex_known_binance_region_block: 40
   longest_missing_gap_hours_if_feasible: 7.871944444444445
   last_successful_timestamp: 2026-05-10T23:35:45Z
 
@@ -25,12 +25,12 @@ data_type: open_interest
   production_exchange: bybit
   known_missing_symbols: FTM_USDT
   bybit_success_rows: 36
-  bybit_error_rows: 21
+  bybit_error_rows: 40
   binance_success_rows: 0
   binance_error_rows: 0
   known_binance_region_block_count: 0
   missing_symbols: 
-  error_rows_ex_known_binance_region_block: 21
+  error_rows_ex_known_binance_region_block: 40
   longest_missing_gap_hours_if_feasible: 7.871944444444445
   last_successful_timestamp: 2026-05-10T23:35:45Z
 
@@ -41,16 +41,16 @@ data_type: mark_index_premium
   production_exchange: bybit
   known_missing_symbols: FTM_USDT
   bybit_success_rows: 36
-  bybit_error_rows: 21
+  bybit_error_rows: 40
   binance_success_rows: 0
   binance_error_rows: 114
   known_binance_region_block_count: 114
   missing_symbols: 
-  error_rows_ex_known_binance_region_block: 21
+  error_rows_ex_known_binance_region_block: 40
   longest_missing_gap_hours_if_feasible: 7.871944444444445
   last_successful_timestamp: 2026-05-10T23:35:45Z
 
-recent_health_runs: 13
+recent_health_runs: 14
 duplicate_rows_prevented: 228
 known_binance_region_block_count: 228
-api_error_count_ex_known_binance_region_block: 63
+api_error_count_ex_known_binance_region_block: 120
