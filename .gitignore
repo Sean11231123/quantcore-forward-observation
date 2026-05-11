@@ -100,3 +100,5 @@ Thumbs.db
 .vscode/
 .idea/
 tempCodeRunnerFile.py
+
+logs/
