@@ -8,6 +8,22 @@ SYMBOLS = [
     "BTCUSDT",
     "ETHUSDT",
     "SOLUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "DOGEUSDT",
+    "LINKUSDT",
+    "AVAXUSDT",
+    "BNBUSDT",
+    "LTCUSDT",
+    "BCHUSDT",
+    "APTUSDT",
+    "ARBUSDT",
+    "OPUSDT",
+    "SUIUSDT",
+    "POLUSDT",
+    "NEARUSDT",
+    "DOTUSDT",
+    "TRXUSDT",
 ]
 
 OUTPUT_FILE = os.path.expanduser(
