@@ -59,6 +59,7 @@ jobs:
           git config user.name "quantcore-bot"
           git config user.email "quantcore-bot@users.noreply.github.com"
           git add logs/v12_signals.csv || true
+          git add logs/v12_observation_heartbeat.csv || true
           git add logs/runtime_errors.log || true
           git diff --cached --quiet || git commit -m "Update V12 forward logs"
           git push

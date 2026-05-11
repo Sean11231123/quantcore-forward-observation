@@ -1,0 +1,40 @@
+Workflow Health Fixes Report
+
+Fixes made:
+
+1. V12 no-signal heartbeat
+- File modified: scripts/run_v12_scan_once.py
+- Added append-only heartbeat file: logs/v12_observation_heartbeat.csv
+- Added fields:
+  run_started_utc, run_completed_utc, completed, connector_available, signal_found, signals_processed, telegram_sent, google_sheet_written, csv_written, duplicate_skipped, errors_json.
+- Purpose: make no-signal and connector-unavailable runs visible in committed repo artifacts.
+- Strategy impact: none.
+
+2. V12 commit-back path
+- File modified: .github/workflows/v12-forward-observation.yml
+- Added logs/v12_observation_heartbeat.csv to commit-back.
+- Purpose: ensure no-signal heartbeat rows are committed.
+- Strategy impact: none.
+
+3. E2 unified health escalation
+- File modified: scripts/e2_unified_health_check.py
+- Added latest crypto logger run status from data/forward/crypto_derivatives/health/e2_health_*.csv.
+- If latest logger run is FAILED or has zero successful symbols, unified health now becomes BLOCKED.
+- Added known_bybit_github_forbidden_count for Bybit HTTP Error 403 rows.
+- Purpose: prevent green workflow from masking a fully failed scheduled data collection run.
+- Strategy impact: none.
+
+Validation:
+- python -m py_compile scripts/run_v12_scan_once.py passed.
+- python scripts/run_v12_scan_once.py wrote a local heartbeat row.
+- python -m py_compile scripts/e2_unified_health_check.py passed.
+- python scripts/e2_unified_health_check.py --hours 24 produced final status BLOCKED because latest scheduled E2 logger run had 0 successful symbols.
+
+No fixes made to:
+- V12 strategy logic.
+- V12 thresholds.
+- V12 entry/exit.
+- E2 data use in strategy.
+- Signal logic.
+- Backtests.
+- Traditional futures production activation.

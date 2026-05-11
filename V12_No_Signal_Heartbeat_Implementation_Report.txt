@@ -1,0 +1,66 @@
+V12 No-Signal Heartbeat Implementation Report
+
+Scope
+Infrastructure observability fix only.
+No V12 entry logic, exit logic, thresholds, filters, signal criteria, or strategy behavior were modified.
+
+Reason for Fix
+The V12 Forward Observation workflow was running successfully in GitHub Actions, but the repository did not contain a durable per-run observation heartbeat for no-signal runs. Because V12 can legitimately produce no signal for many days, stale signal output alone could not distinguish healthy no-signal observation from a hidden workflow or data-fetch failure.
+
+Files Modified
+- scripts/run_v12_scan_once.py
+- .github/workflows/v12-forward-observation.yml
+
+Files Created
+- logs/v12_observation_heartbeat.csv
+
+Heartbeat Output
+Path:
+logs/v12_observation_heartbeat.csv
+
+Columns:
+- run_started_utc
+- run_completed_utc
+- completed
+- connector_available
+- signal_found
+- signals_processed
+- telegram_sent
+- google_sheet_written
+- csv_written
+- duplicate_skipped
+- errors_json
+
+Behavior
+The V12 scan script now appends one heartbeat row for every run, including no-signal runs and runs where the Binance connector is unavailable. This makes observation freshness independently verifiable even when no new signal is generated.
+
+Workflow Commit-Back
+The V12 workflow commit-back step was updated to include:
+logs/v12_observation_heartbeat.csv
+
+Local Validation
+Command:
+python scripts\run_v12_scan_once.py
+
+Result:
+The script completed without crashing and wrote a heartbeat row.
+
+Local validation row summary:
+- completed: Yes
+- connector_available: No
+- signal_found: No
+- signals_processed: 0
+- error: binance connector unavailable; no scan executed
+
+Interpretation
+The local connector-unavailable result is expected in the local environment if production exchange credentials or connector setup are only present in GitHub Actions. The important validation result is that the heartbeat is written even when no scan can be executed.
+
+Remaining Verification
+After push, the next scheduled or manually triggered GitHub Actions V12 run should commit a fresh heartbeat row if repository write permissions are active.
+
+Classification Impact
+V12 classification remains:
+V12 FORWARD WARNING
+
+Reason:
+The workflow is active and a heartbeat mechanism now exists, but commit-back of the new heartbeat needs to be confirmed from a GitHub Actions run.

@@ -1,0 +1,129 @@
+E2 Unified Logger Health Audit Report
+
+Task type:
+Workflow / data freshness / commit-back / health audit only.
+
+Scope boundary:
+No strategy use, alpha test, forward return, V12 connection, threshold change, paid data, or traditional futures production activation was performed.
+
+Workflow file:
+.github/workflows/e2_forward_logger.yml
+
+Workflow display name:
+E2 Unified Forward Logger
+
+Trigger inspection:
+- schedule trigger: YES
+- cron: 5 * * * *
+- expected runs per day: 24
+- workflow_dispatch: YES
+- workflow_dispatch input: exchange, default bybit, choices bybit / binance / both
+- scheduled production mode: bybit
+- manual mode can select binance or both for diagnostics only
+- push trigger exists for scripts/e2_*.py and the workflow file
+- schedule jitter risk: moderate. Cron is non-zero minute 5, acceptable though still subject to GitHub scheduler delay.
+
+Commit-back inspection:
+- workflow has contents: write
+- workflow commits:
+  data/forward/crypto_derivatives/funding/*.csv
+  data/forward/crypto_derivatives/open_interest/*.csv
+  data/forward/crypto_derivatives/mark_index_premium/*.csv
+  data/forward/crypto_derivatives/health/*.csv
+  data/forward/health/*.txt
+- commit-back has previously worked, including commit ca191c1 and later E2 update commits.
+
+Latest E2 run metadata observed:
+- Latest recent E2 scheduled run: 2026-05-11T00:03:43Z.
+- Status: completed.
+- Conclusion: success.
+- URL: https://github.com/Sean11231123/quantcore-forward-observation/actions/runs/25643465822
+
+Data folder inspection:
+data/forward/crypto_derivatives/
+
+Data type: funding
+- latest file: data/forward/crypto_derivatives/funding/funding_2026_05.csv
+- total rows: 171
+- rows in last 24h: 171
+- successful rows in last 24h: 36
+- error rows in last 24h: 135
+- latest successful timestamp: 2026-05-10T23:35:45Z
+- unique successful data timestamps in last 24h: 2
+- unique successful symbols in last 24h: 18
+- Binance rows in last 24h: present from earlier scheduled runs before production fix
+- Binance 451 / known_binance_region_block rows: 114
+
+Data type: open_interest
+- latest file: data/forward/crypto_derivatives/open_interest/open_interest_2026_05.csv
+- total rows: 57
+- rows in last 24h: 57
+- successful rows in last 24h: 36
+- error rows in last 24h: 21
+- latest successful timestamp: 2026-05-10T23:35:45Z
+- unique successful data timestamps in last 24h: 2
+- unique successful symbols in last 24h: 18
+- Binance rows in last 24h: none for OI
+
+Data type: mark_index_premium
+- latest file: data/forward/crypto_derivatives/mark_index_premium/mark_index_premium_2026_05.csv
+- total rows: 171
+- rows in last 24h: 171
+- successful rows in last 24h: 36
+- error rows in last 24h: 135
+- latest successful timestamp: 2026-05-10T23:35:45Z
+- unique successful data timestamps in last 24h: 2
+- unique successful symbols in last 24h: 18
+- Binance rows in last 24h: present from earlier scheduled runs before production fix
+- Binance 451 / known_binance_region_block rows: 114
+
+Health report inspection:
+data/forward/health/e2_unified_daily_health_report.txt
+
+Current health values after audit fix:
+- generated timestamp: 2026-05-11T00:27:01Z
+- latest_logger_run_timestamp: 2026-05-11T00:04:12Z
+- latest_logger_run_status: FAILED
+- latest_logger_successful_symbol_count: 0
+- latest_logger_failed_symbol_count: 19
+- production_exchange: bybit
+- production_eligible_symbols: 18
+- known_missing_symbols: FTM_USDT
+- expected_rows_last_24h: 432
+- latest Bybit success timestamp: 2026-05-10T23:35:45Z
+- stale_hours_bybit at audit time: about 0.85
+- final health status: BLOCKED
+
+Critical finding:
+E2 still has the same class of hidden failure pattern.
+The scheduled workflow is green, but the latest scheduled production logger run had zero successful symbols and wrote Bybit HTTP Error 403 rows from the GitHub runner.
+
+Difference from previous Binance 451 issue:
+- Binance 451 was fixed as scheduled production source.
+- New failure source is Bybit HTTP 403 from GitHub-hosted runner environment.
+- Local Bybit still works, but scheduled GitHub collection is not producing fresh Bybit rows.
+
+Duplicate prevention:
+- Duplicate prevention key remains exchange, symbol, data_timestamp_utc, source_name.
+- Local duplicate-prevention validation previously prevented 57 duplicate rows.
+- No evidence found that duplicate prevention is blocking legitimate fresh hourly rows; latest scheduled failure is endpoint access, not duplicate handling.
+
+Error classification:
+- FTM_USDT is known missing.
+- Binance 451 is separated as known_binance_region_block.
+- New Bybit GitHub 403 failure is now surfaced through known_bybit_github_forbidden_count and latest_logger_run_status FAILED.
+
+Commit-back:
+- Commit-back works. The issue is not commit-back.
+- The workflow commits health/error rows, which is useful, but the final workflow status alone is not sufficient health evidence.
+
+Fix applied in this audit:
+- scripts/e2_unified_health_check.py now reads the latest crypto logger health row.
+- If latest_logger_run_status is FAILED or latest successful symbol count is 0, unified health becomes BLOCKED immediately.
+- Unified health now reports known_bybit_github_forbidden_count per data type.
+
+Classification:
+E2 BLOCKED
+
+Reason:
+Scheduled production cannot currently produce fresh Bybit data from GitHub Actions. Local Bybit works, and commit-back works, but the production scheduled runner is blocked by Bybit HTTP 403.

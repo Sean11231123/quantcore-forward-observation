@@ -1,0 +1,82 @@
+V12 Forward Observation Health Audit Report
+
+Task type:
+Workflow / data freshness / commit-back / health audit only.
+
+Scope boundary:
+No V12 entry logic, exit logic, thresholds, filters, signal criteria, SL/TP/BE, backtest, equity curve, alpha test, or strategy behavior was modified.
+
+Workflow file:
+.github/workflows/v12-forward-observation.yml
+
+Workflow display name:
+V12 Forward Observation
+
+Trigger inspection:
+- schedule trigger: YES
+- cron: 7,22,37,52 * * * *
+- expected runs per day: 96
+- workflow_dispatch: YES
+- workflow_dispatch inputs: none
+- schedule jitter risk: low/moderate. Cron uses non-zero minutes and avoids exact top-of-hour.
+
+Command executed:
+python scripts/run_v12_scan_once.py
+
+Other workflow steps:
+- Optional workflow-dispatch Telegram heartbeat only on manual dispatch.
+- Telegram review polling.
+- Commit-back step.
+
+Commit-back inspection before fix:
+- logs/v12_signals.csv committed.
+- logs/runtime_errors.log committed.
+- No no-signal heartbeat or observation-health file was committed.
+
+V12 output artifact inspection:
+- logs/v12_signals.csv exists.
+- Latest signal_timestamp inside logs/v12_signals.csv: 2026-05-04T13:00:00Z.
+- Latest git commit touching logs/v12_signals.csv: 38cef46 Initial QuantCore forward observation deployment.
+- No committed no-signal heartbeat existed before this audit.
+- logs/runtime_errors.log was included in workflow commit-back if present.
+
+Latest workflow run metadata observed:
+- Latest recent V12 scheduled run: 2026-05-10T23:30:14Z.
+- Status: completed.
+- Conclusion: success.
+- URL: https://github.com/Sean11231123/quantcore-forward-observation/actions/runs/25642773892
+
+No-signal handling before fix:
+- scripts/run_v12_scan_once.py printed a JSON summary to GitHub Actions logs.
+- No-signal runs did not necessarily update any committed file.
+- Therefore a green workflow could occur while repo-visible V12 output stayed stale.
+
+Hidden failure risks found:
+- Workflow green but no committed output update during no-signal periods: YES.
+- Missing no-signal heartbeat: YES, fixed by this audit.
+- Output path mismatch: no direct mismatch found.
+- Commit-back path excluding health/heartbeat: YES, fixed by this audit.
+- Script exits 0 when Binance connector unavailable: observed locally. It is now visible in heartbeat errors_json, but remote behavior depends on GitHub secrets/connectors.
+- Missing data could be hard to distinguish from no signal if only Actions logs are reviewed.
+
+Fix applied:
+- Added append-only logs/v12_observation_heartbeat.csv.
+- Added heartbeat fields:
+  run_started_utc, run_completed_utc, completed, connector_available, signal_found, signals_processed, telegram_sent, google_sheet_written, csv_written, duplicate_skipped, errors_json.
+- Added logs/v12_observation_heartbeat.csv to workflow commit-back.
+
+Local validation:
+- python -m py_compile scripts/run_v12_scan_once.py passed.
+- python scripts/run_v12_scan_once.py ran and wrote a heartbeat row.
+- Local run result: completed Yes, signal_found No, connector_available No, error "binance connector unavailable; no scan executed".
+- This local connector error is expected on the local machine without exchange credentials and does not alter V12 logic.
+
+Freshness after local heartbeat validation:
+- Latest heartbeat timestamp: 2026-05-11T00:24:11Z.
+- Scheduled GitHub heartbeat commit-back still needs confirmation on the next V12 scheduled run after this fix is pushed.
+
+Classification:
+V12 FORWARD WARNING
+
+Reason:
+The workflow itself is running successfully, but before this audit no committed no-signal heartbeat existed. The heartbeat fix was added and locally validated, but scheduled GitHub heartbeat commit-back still needs confirmation after the next scheduled run.

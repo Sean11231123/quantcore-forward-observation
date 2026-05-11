@@ -12,6 +12,7 @@ CRYPTO = FORWARD / "crypto_derivatives"
 FUTURES = FORWARD / "traditional_futures" / "daily" / "traditional_futures_daily.csv"
 HEALTH = FORWARD / "health"
 REPORT = HEALTH / "e2_unified_daily_health_report.txt"
+CRYPTO_HEALTH_DIR = CRYPTO / "health"
 
 CRYPTO_TYPES = {
     "funding": CRYPTO / "funding",
@@ -60,6 +61,13 @@ def duplicate_count(rows: list[dict[str, str]], keys: list[str]) -> int:
     return duplicates
 
 
+def latest_crypto_health() -> dict[str, str] | None:
+    rows = read_rows(CRYPTO_HEALTH_DIR)
+    if not rows:
+        return None
+    return max(rows, key=lambda row: parse_ts(row.get("health_timestamp_utc", "")) or datetime.min.replace(tzinfo=timezone.utc))
+
+
 def crypto_section(hours: int) -> tuple[list[str], list[str]]:
     now = datetime.now(timezone.utc)
     cutoff = now - timedelta(hours=hours)
@@ -68,6 +76,22 @@ def crypto_section(hours: int) -> tuple[list[str], list[str]]:
     blocked = False
     expected_runs = max(1, hours // EXPECTED_RUN_INTERVAL_HOURS)
     expected_rows = len(PRODUCTION_CRYPTO_SYMBOLS) * expected_runs
+    latest_health = latest_crypto_health()
+    if latest_health:
+        latest_status = latest_health.get("overall_status", "")
+        latest_success = latest_health.get("successful_symbol_count", "")
+        lines.extend([
+            f"latest_logger_run_timestamp: {latest_health.get('health_timestamp_utc', '')}",
+            f"latest_logger_run_status: {latest_status}",
+            f"latest_logger_successful_symbol_count: {latest_success}",
+            f"latest_logger_failed_symbol_count: {latest_health.get('failed_symbol_count', '')}",
+        ])
+        if latest_status == "FAILED" or str(latest_success) in ("0", "0.0"):
+            warnings.append("latest crypto derivatives logger run had zero successful symbols")
+            blocked = True
+    else:
+        warnings.append("missing crypto derivatives logger health rows")
+        blocked = True
     for name, folder in CRYPTO_TYPES.items():
         rows = read_rows(folder)
         if not rows:
@@ -79,6 +103,10 @@ def crypto_section(hours: int) -> tuple[list[str], list[str]]:
         binance_success = [r for r in success if r.get("exchange") == "binance"]
         errors = [r for r in rows if str(r.get("request_success", "")).lower() != "true"]
         bybit_errors = [r for r in errors if r.get("exchange") == "bybit"]
+        known_bybit_github_forbidden = [
+            r for r in bybit_errors
+            if "HTTP Error 403" in str(r.get("error_message", ""))
+        ]
         binance_errors = [r for r in errors if r.get("exchange") == "binance"]
         known_binance_region_block = [
             r for r in binance_errors
@@ -120,6 +148,7 @@ def crypto_section(hours: int) -> tuple[list[str], list[str]]:
             f"  bybit_success_rows_last_{hours}h: {len(recent_bybit)}",
             f"  bybit_success_rows_total: {len(bybit_success)}",
             f"  bybit_error_rows: {len(bybit_errors)}",
+            f"  known_bybit_github_forbidden_count: {len(known_bybit_github_forbidden)}",
             f"  binance_success_rows: {len(binance_success)}",
             f"  binance_error_rows: {len(binance_errors)}",
             f"  known_binance_region_block_count: {len(known_binance_region_block)}",
