@@ -34,10 +34,13 @@ Commit-back inspection:
 - commit-back has previously worked, including commit ca191c1 and later E2 update commits.
 
 Latest E2 run metadata observed:
-- Latest recent E2 scheduled run: 2026-05-11T00:03:43Z.
+- Latest completed E2 run after audit push: 2026-05-11T00:31:58Z.
+- Event: push.
 - Status: completed.
 - Conclusion: success.
-- URL: https://github.com/Sean11231123/quantcore-forward-observation/actions/runs/25643465822
+- URL: https://github.com/Sean11231123/quantcore-forward-observation/actions/runs/25644141654
+- Latest completed scheduled run before audit push: 2026-05-11T00:03:43Z, completed/success.
+- Scheduled URL: https://github.com/Sean11231123/quantcore-forward-observation/actions/runs/25643465822
 
 Data folder inspection:
 data/forward/crypto_derivatives/
@@ -80,9 +83,9 @@ Data type: mark_index_premium
 Health report inspection:
 data/forward/health/e2_unified_daily_health_report.txt
 
-Current health values after audit fix:
-- generated timestamp: 2026-05-11T00:27:01Z
-- latest_logger_run_timestamp: 2026-05-11T00:04:12Z
+Current health values after audit fix and workflow commit-back:
+- generated timestamp: 2026-05-11T00:33:51Z
+- latest_logger_run_timestamp: 2026-05-11T00:32:21Z
 - latest_logger_run_status: FAILED
 - latest_logger_successful_symbol_count: 0
 - latest_logger_failed_symbol_count: 19
@@ -91,12 +94,12 @@ Current health values after audit fix:
 - known_missing_symbols: FTM_USDT
 - expected_rows_last_24h: 432
 - latest Bybit success timestamp: 2026-05-10T23:35:45Z
-- stale_hours_bybit at audit time: about 0.85
+- stale_hours_bybit at audit time: about 0.97
 - final health status: BLOCKED
 
 Critical finding:
 E2 still has the same class of hidden failure pattern.
-The scheduled workflow is green, but the latest scheduled production logger run had zero successful symbols and wrote Bybit HTTP Error 403 rows from the GitHub runner.
+The workflow is green, but the latest production logger run had zero successful symbols and wrote Bybit HTTP Error 403 rows from the GitHub runner. This was confirmed again by the audit-push run after the health-check fix.
 
 Difference from previous Binance 451 issue:
 - Binance 451 was fixed as scheduled production source.

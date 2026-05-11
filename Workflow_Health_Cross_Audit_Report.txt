@@ -10,7 +10,7 @@ Summary table:
 
 workflow_name,active_or_conditional,schedule_cron,expected_runs_per_day,latest_run_status,latest_output_timestamp,output_freshness_status,commit_back_status,hidden_failure_risk,classification,recommended_action
 V12 Forward Observation,ACTIVE,"7,22,37,52 * * * *",96,"completed/success at 2026-05-10T23:30:14Z","heartbeat local validation 2026-05-11T00:24:11Z; signal log latest 2026-05-04T13:00:00Z","WARNING until scheduled heartbeat commit-back is confirmed","commit-back path now includes heartbeat","previously yes: green workflow with no committed no-signal heartbeat","V12 FORWARD WARNING","Monitor next scheduled run for logs/v12_observation_heartbeat.csv commit-back"
-E2 Unified Logger,ACTIVE,"5 * * * *",24,"completed/success at 2026-05-11T00:03:43Z","latest Bybit success 2026-05-10T23:35:45Z; latest scheduled logger run 2026-05-11T00:04:12Z failed","BLOCKED: latest scheduled production logger run had zero successful symbols","commit-back works","yes: green workflow but scheduled Bybit runner receives HTTP 403","E2 BLOCKED","Move production off GitHub-hosted runner, use self-hosted/local/VPS, or approved endpoint workaround"
+E2 Unified Logger,ACTIVE,"5 * * * *",24,"completed/success at 2026-05-11T00:31:58Z push run; latest schedule completed/success at 2026-05-11T00:03:43Z","latest Bybit success 2026-05-10T23:35:45Z; latest logger run 2026-05-11T00:32:21Z failed","BLOCKED: latest production logger run had zero successful symbols","commit-back works","yes: green workflow but GitHub-hosted Bybit runner receives HTTP 403","E2 BLOCKED","Move production off GitHub-hosted runner, use self-hosted/local/VPS, or approved endpoint workaround"
 E2 Unified Logger Proposed Futures,CONDITIONAL / NOT PRODUCTION ACTIVE,"none",0,"not production active","none expected","not applicable","conditional workflow only","not a failure","CONDITIONAL / NOT PRODUCTION ACTIVE","Do not activate until Yahoo Finance ToS confirmation"
 
 Detailed comparison
@@ -26,7 +26,7 @@ E2 Unified Logger
 - Workflow is active and commit-back works.
 - Scheduled production mode is Bybit.
 - Manual diagnostic modes include Binance and both.
-- Current health now correctly identifies the latest scheduled logger run as FAILED with 0 successful symbols.
+- Current health now correctly identifies the latest production logger run as FAILED with 0 successful symbols.
 - Bybit failures from GitHub runner are HTTP Error 403: Forbidden.
 - This is the same class of hidden failure as the earlier Binance 451 issue: workflow green does not equal data healthy.
 - Classification is BLOCKED for scheduled production data collection.

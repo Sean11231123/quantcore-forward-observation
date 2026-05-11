@@ -24,6 +24,12 @@ Fixes made:
 - Purpose: prevent green workflow from masking a fully failed scheduled data collection run.
 - Strategy impact: none.
 
+Post-push confirmation:
+- The audit commit triggered an E2 workflow run at 2026-05-11T00:31:58Z.
+- GitHub Actions concluded success and commit-back worked.
+- The new unified health check recorded the latest logger run at 2026-05-11T00:32:21Z as FAILED with 0 successful symbols and 19 failed symbols.
+- This confirms the health fix catches the hidden failure pattern.
+
 Validation:
 - python -m py_compile scripts/run_v12_scan_once.py passed.
 - python scripts/run_v12_scan_once.py wrote a local heartbeat row.
