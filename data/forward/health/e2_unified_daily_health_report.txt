@@ -1,5 +1,5 @@
 E2 Unified Daily Health Report
-timestamp: 2026-05-10T23:39:41Z
+timestamp: 2026-05-11T00:05:39Z
 
 Crypto derivatives module
 - funding:
@@ -11,13 +11,13 @@ Crypto derivatives module
   expected_rows_last_24h: 432
   bybit_success_rows_last_24h: 36
   bybit_success_rows_total: 36
-  bybit_error_rows: 2
+  bybit_error_rows: 21
   binance_success_rows: 0
   binance_error_rows: 114
   known_binance_region_block_count: 114
   symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
   missing_symbols: 
-  stale_hours_bybit: 0.06569578194444445
+  stale_hours_bybit: 0.4985531991666667
   duplicate_count: 0
 - open_interest:
   latest_data_timestamp: 2026-05-10T23:35:45Z
@@ -28,13 +28,13 @@ Crypto derivatives module
   expected_rows_last_24h: 432
   bybit_success_rows_last_24h: 36
   bybit_success_rows_total: 36
-  bybit_error_rows: 2
+  bybit_error_rows: 21
   binance_success_rows: 0
   binance_error_rows: 0
   known_binance_region_block_count: 0
   symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
   missing_symbols: 
-  stale_hours_bybit: 0.06569578194444445
+  stale_hours_bybit: 0.4985531991666667
   duplicate_count: 0
 - mark_index_premium:
   latest_data_timestamp: 2026-05-10T23:35:45Z
@@ -45,13 +45,13 @@ Crypto derivatives module
   expected_rows_last_24h: 432
   bybit_success_rows_last_24h: 36
   bybit_success_rows_total: 36
-  bybit_error_rows: 2
+  bybit_error_rows: 21
   binance_success_rows: 0
   binance_error_rows: 114
   known_binance_region_block_count: 114
   symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
   missing_symbols: 
-  stale_hours_bybit: 0.06569578194444445
+  stale_hours_bybit: 0.4985531991666667
   duplicate_count: 0
 
 Traditional futures module
