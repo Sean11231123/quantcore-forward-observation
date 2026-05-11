@@ -1,8 +1,8 @@
 E2 Unified Daily Health Report
-timestamp: 2026-05-11T21:39:48Z
+timestamp: 2026-05-11T23:08:43Z
 
 Crypto derivatives module
-latest_logger_run_timestamp: 2026-05-11T21:38:17Z
+latest_logger_run_timestamp: 2026-05-11T23:07:13Z
 latest_logger_run_status: FAILED
 latest_logger_successful_symbol_count: 0
 latest_logger_failed_symbol_count: 19
@@ -15,14 +15,14 @@ latest_logger_failed_symbol_count: 19
   expected_rows_last_24h: 432
   bybit_success_rows_last_24h: 18
   bybit_success_rows_total: 36
-  bybit_error_rows: 135
-  known_bybit_github_forbidden_count: 133
+  bybit_error_rows: 154
+  known_bybit_github_forbidden_count: 152
   binance_success_rows: 0
   binance_error_rows: 114
   known_binance_region_block_count: 114
   symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
   missing_symbols: 
-  stale_hours_bybit: 22.06757690222222
+  stale_hours_bybit: 23.54949010888889
   duplicate_count: 0
 - open_interest:
   latest_data_timestamp: 2026-05-10T23:35:45Z
@@ -33,14 +33,14 @@ latest_logger_failed_symbol_count: 19
   expected_rows_last_24h: 432
   bybit_success_rows_last_24h: 18
   bybit_success_rows_total: 36
-  bybit_error_rows: 135
-  known_bybit_github_forbidden_count: 133
+  bybit_error_rows: 154
+  known_bybit_github_forbidden_count: 152
   binance_success_rows: 0
   binance_error_rows: 0
   known_binance_region_block_count: 0
   symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
   missing_symbols: 
-  stale_hours_bybit: 22.06757690222222
+  stale_hours_bybit: 23.54949010888889
   duplicate_count: 0
 - mark_index_premium:
   latest_data_timestamp: 2026-05-10T23:35:45Z
@@ -51,14 +51,14 @@ latest_logger_failed_symbol_count: 19
   expected_rows_last_24h: 432
   bybit_success_rows_last_24h: 18
   bybit_success_rows_total: 36
-  bybit_error_rows: 135
-  known_bybit_github_forbidden_count: 133
+  bybit_error_rows: 154
+  known_bybit_github_forbidden_count: 152
   binance_success_rows: 0
   binance_error_rows: 114
   known_binance_region_block_count: 114
   symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
   missing_symbols: 
-  stale_hours_bybit: 22.06757690222222
+  stale_hours_bybit: 23.54949010888889
   duplicate_count: 0
 
 Traditional futures module
@@ -66,9 +66,9 @@ Traditional futures module
 
 warning list:
 - latest crypto derivatives logger run had zero successful symbols
-- crypto funding latest Bybit data stale >6 intervals: 22.07h
-- crypto open_interest latest Bybit data stale >6 intervals: 22.07h
-- crypto mark_index_premium latest Bybit data stale >6 intervals: 22.07h
+- crypto funding latest Bybit data stale >6 intervals: 23.55h
+- crypto open_interest latest Bybit data stale >6 intervals: 23.55h
+- crypto mark_index_premium latest Bybit data stale >6 intervals: 23.55h
 - traditional futures daily CSV missing; module is conditional until user ToS confirmation
 
 final status: BLOCKED
