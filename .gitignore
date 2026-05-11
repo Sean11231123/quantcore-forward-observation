@@ -100,3 +100,6 @@ Thumbs.db
 .vscode/
 .idea/
 tempCodeRunnerFile.py
+
+logs/e2.log
+logs/e2_push.log
