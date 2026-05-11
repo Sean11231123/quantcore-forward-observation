@@ -1,8 +1,8 @@
 E2 Unified Daily Health Report
-timestamp: 2026-05-11T00:27:01Z
+timestamp: 2026-05-11T00:33:51Z
 
 Crypto derivatives module
-latest_logger_run_timestamp: 2026-05-11T00:04:12Z
+latest_logger_run_timestamp: 2026-05-11T00:32:21Z
 latest_logger_run_status: FAILED
 latest_logger_successful_symbol_count: 0
 latest_logger_failed_symbol_count: 19
@@ -22,7 +22,7 @@ latest_logger_failed_symbol_count: 19
   known_binance_region_block_count: 114
   symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
   missing_symbols: 
-  stale_hours_bybit: 0.8546922466666667
+  stale_hours_bybit: 0.9683505183333333
   duplicate_count: 0
 - open_interest:
   latest_data_timestamp: 2026-05-10T23:35:45Z
@@ -40,7 +40,7 @@ latest_logger_failed_symbol_count: 19
   known_binance_region_block_count: 0
   symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
   missing_symbols: 
-  stale_hours_bybit: 0.8546922466666667
+  stale_hours_bybit: 0.9683505183333333
   duplicate_count: 0
 - mark_index_premium:
   latest_data_timestamp: 2026-05-10T23:35:45Z
@@ -58,7 +58,7 @@ latest_logger_failed_symbol_count: 19
   known_binance_region_block_count: 114
   symbols_updated_last_24h: ADA_USDT,APT_USDT,ARB_USDT,AVAX_USDT,BCH_USDT,BNB_USDT,DOGE_USDT,DOT_USDT,ETH_USDT,LINK_USDT,LTC_USDT,NEAR_USDT,OP_USDT,POL_USDT,SOL_USDT,SUI_USDT,TRX_USDT,XRP_USDT
   missing_symbols: 
-  stale_hours_bybit: 0.8546922466666667
+  stale_hours_bybit: 0.9683505183333333
   duplicate_count: 0
 
 Traditional futures module
