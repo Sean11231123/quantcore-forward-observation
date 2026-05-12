@@ -3,6 +3,26 @@
 Layer 1 derivatives forward logging for QuantCore. This is data infrastructure only:
 no signals, no strategy logic, no V12 integration, no execution, and no backtest.
 
+## Production Status
+
+GitHub-hosted E2 production is disabled.
+
+Current production path is the Pixel 4 Mobile Collector:
+
+- Pixel 4 + Termux
+- cron hourly run
+- Bybit public API access
+- hourly CSV append
+- duplicate prevention
+- GitHub push cloud backup
+
+The former GitHub-hosted workflow was removed because hosted runners were blocked for production collection:
+
+- Binance HTTP 451
+- Bybit HTTP 403
+- latest hosted production logger runs wrote 0 successful symbols
+- green GitHub workflow status did not prove data collection success
+
 ## Scope
 
 The logger records hourly public derivatives snapshots for the 19 non-BTC
@@ -76,15 +96,9 @@ python scripts/e2_health_check.py --hours 24
 
 ## GitHub Actions
 
-`.github/workflows/e2_forward_logger.yml` runs hourly at minute 5 UTC, executes
-the crypto derivatives logger, runs crypto and unified health checks, and commits
-updated CSV rows back to the repo.
+The active GitHub-hosted crypto derivatives workflow `.github/workflows/e2_forward_logger.yml` has been removed.
 
-The workflow uses public endpoints only and requires no private API keys.
-
-Repository setting required:
-
-- Actions permissions must allow `contents: write`.
+GitHub remains the cloud backup destination for Pixel 4 collector pushes. The E2 scripts remain available for local/manual diagnostics and for the Pixel 4 production collector path.
 
 ## Limitations
 

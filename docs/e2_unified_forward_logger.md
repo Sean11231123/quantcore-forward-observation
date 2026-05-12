@@ -4,6 +4,21 @@ E2 is QuantCore Phase 2 data infrastructure. It logs forward data for future res
 
 It does not create signals, merge futures data with crypto returns, run outcome tests, backtest, modify V12, simulate equity, or produce trading recommendations.
 
+## Production Status
+
+GitHub-hosted E2 production is disabled.
+
+Current E2 production path:
+
+- Pixel 4 Mobile Collector
+- Termux + cron hourly run
+- append-only CSV storage
+- duplicate prevention
+- GitHub push cloud backup
+
+Reason:
+GitHub-hosted Actions was formally classified as E2 BLOCKED for production collection after Binance returned HTTP 451 and Bybit returned HTTP 403 from GitHub-hosted runners. Green workflow status did not imply successful data collection.
+
 ## Modules
 
 - Crypto derivatives Layer 1: funding, open interest, mark price, index price, premium/basis.
@@ -60,11 +75,11 @@ python scripts/e2_unified_health_check.py --hours 24
 
 ## GitHub Actions
 
-`.github/workflows/e2_forward_logger.yml` runs the active crypto derivatives logger and unified health check hourly. It commits new `data/forward` crypto derivatives data and health reports back to the repo.
+The former active GitHub-hosted crypto derivatives workflow `.github/workflows/e2_forward_logger.yml` has been removed to prevent accidental blocked production runs.
 
 `.github/workflows/e2_unified_forward_logger_proposed.yml` is a proposed manual futures workflow. It requires a `confirm_yahoo_tos` input of `YES` before running the futures fetch.
 
-Repository workflow permissions must allow read/write contents for commit-back.
+Pixel 4 Mobile Collector is the current E2 production collector. GitHub is used as cloud backup via pushes from the mobile collector, not as the hosted production runtime for crypto derivatives collection.
 
 ## Governance
 

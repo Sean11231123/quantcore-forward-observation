@@ -1,0 +1,60 @@
+E2 GitHub-Hosted Workflow Removal Report
+
+Status:
+Phase 2 infrastructure cleanup completed.
+
+Final classification:
+E2 GITHUB-HOSTED WORKFLOW REMOVED / PIXEL4 MOBILE COLLECTOR ACTIVE
+
+Reason for Cleanup
+GitHub-hosted E2 production was formally classified as E2 BLOCKED.
+
+Observed hosted-runner failures:
+- Binance HTTP 451
+- Bybit HTTP 403
+- latest hosted production logger runs wrote 0 successful symbols
+- GitHub Actions green workflow status did not imply successful data collection
+
+Current Production Path
+Pixel 4 Mobile Collector:
+- Bybit API access PASS
+- hourly CSV append PASS
+- duplicate prevention PASS
+- cron active
+- GitHub push cloud backup PASS
+
+File Removed
+- .github/workflows/e2_forward_logger.yml
+
+Reason:
+Prevent confusion and accidental blocked GitHub-hosted production runs.
+
+Files Updated
+- docs/e2_forward_logger.md
+- docs/e2_unified_forward_logger.md
+
+Documentation Updates
+Both docs now state:
+- GitHub-hosted E2 production is disabled.
+- Pixel 4 Mobile Collector is the current E2 production path.
+- GitHub remains a cloud backup destination for Pixel 4 collector pushes.
+- E2 scripts remain available for local/manual diagnostics and Pixel 4 production use.
+
+Preserved
+- E2 collector scripts
+- E2 health scripts
+- E2 historical reports
+- data/forward/crypto_derivatives/
+- V12 workflow
+- proposed futures conditional workflow
+
+Not Changed
+- No V12 changes.
+- No strategy logic changes.
+- No traditional futures activation.
+- No outcome testing.
+- No Pixel 4 collector schema changes.
+- No data deletion.
+
+Operational Note
+The active hosted workflow was removed rather than archived as manual-only because the explicit objective is to prevent accidental blocked production runs from GitHub-hosted runners. Manual/local diagnostics remain available through the scripts.
