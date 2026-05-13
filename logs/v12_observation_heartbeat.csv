@@ -25,3 +25,4 @@ run_started_utc,run_completed_utc,completed,heartbeat_state,connector_available,
 2026-05-13T01:25:20Z,2026-05-13T01:25:20Z,Yes,connector_unavailable,No,No,No,No,0,0,0,0,0,missing_or_unavailable_connector,,,"[""binance connector unavailable; no scan executed""]"
 2026-05-13T05:30:23Z,2026-05-13T05:30:23Z,Yes,connector_unavailable,No,No,No,No,0,0,0,0,0,missing_or_unavailable_connector,,,"[""binance connector unavailable; no scan executed""]"
 2026-05-13T07:07:56Z,2026-05-13T07:07:56Z,Yes,connector_unavailable,No,No,No,No,0,0,0,0,0,missing_binance_testnet_secret,No,No,"[""binance connector unavailable; no scan executed; BINANCE_TESTNET_KEY_present=False; BINANCE_TESTNET_SECRET_present=False""]"
+2026-05-13T07:32:22Z,2026-05-13T07:32:24Z,Yes,valid_no_signal,Yes,Yes,Yes,No,0,0,0,0,0,,Yes,Yes,[]
