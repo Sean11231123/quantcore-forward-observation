@@ -15,7 +15,7 @@ if [ "$PULL_STATUS" -ne 0 ]; then
 fi
 
 echo "ADD_FILES"
-git add data/forward/crypto_derivatives/bybit_hourly.csv
+git add -f data/forward/crypto_derivatives/bybit_hourly.csv
 git add e2_collector.py
 git add .gitignore
 
