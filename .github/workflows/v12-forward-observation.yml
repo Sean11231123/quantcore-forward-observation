@@ -27,6 +27,8 @@ jobs:
 
       - name: Run V12 scan once
         env:
+          BINANCE_TESTNET_KEY: ${{ secrets.BINANCE_TESTNET_KEY }}
+          BINANCE_TESTNET_SECRET: ${{ secrets.BINANCE_TESTNET_SECRET }}
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
           TG_COMMENT_CHAT_ID: ${{ secrets.TG_COMMENT_CHAT_ID }}

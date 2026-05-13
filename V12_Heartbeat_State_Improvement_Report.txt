@@ -1,0 +1,74 @@
+V12 Heartbeat State Improvement Report
+
+Task type:
+Infrastructure observability fix only.
+
+Files Changed
+- scripts/run_v12_scan_once.py
+- logs/v12_observation_heartbeat.csv
+
+Required State Categories Implemented
+
+1. valid_no_signal
+Definition:
+Connector available, data fetched, scan executed, no signal found.
+
+2. connector_unavailable
+Definition:
+Connector could not initialize or required exchange connector was missing, scan not executed.
+
+3. data_fetch_failed
+Definition:
+Connector initialized, but required market data / regime data was not fetched, so signal scan was not executed.
+
+4. signal_found
+Definition:
+Connector available, data fetched, scan executed, one or more signals were processed.
+
+Required Fields Implemented
+- run_started_utc
+- run_completed_utc
+- completed
+- heartbeat_state
+- connector_available
+- data_fetch_success
+- scan_executed
+- signal_found
+- signals_processed
+- telegram_sent
+- google_sheet_written
+- csv_written
+- duplicate_skipped
+- errors_json
+
+Additional Diagnostic Fields Added
+- connector_failure_category
+- binance_testnet_key_present
+- binance_testnet_secret_present
+
+Backward Compatibility
+The heartbeat writer now upgrades the existing CSV schema when an older heartbeat file is present. Old rows are preserved and mapped into the new schema where possible.
+
+Local Validation
+Command:
+python scripts\run_v12_scan_once.py
+
+Result:
+- completed = Yes
+- heartbeat_state = connector_unavailable
+- connector_available = No
+- data_fetch_success = No
+- scan_executed = No
+- signal_found = No
+- connector_failure_category = missing_binance_testnet_secret
+
+Interpretation:
+The local validation was not a valid V12 forward observation because the connector was unavailable and scan_executed = No. It was a successful infrastructure validation of the heartbeat state schema.
+
+No Strategy Changes
+- No V12 entry logic changed.
+- No V12 exit logic changed.
+- No thresholds changed.
+- No source replacement performed.
+- No E2 data integration performed.
+- No backtest or outcome test performed.

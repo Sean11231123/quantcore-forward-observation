@@ -1,0 +1,98 @@
+V12 Connector Diagnosis Report
+
+Task type:
+Phase 2 infrastructure correctness / forward observation recovery only.
+
+Current official status:
+V12 FORWARD BLOCKED
+
+Important interpretation:
+Previous rows with connector_available = No are infrastructure diagnostics only. They are not valid V12 forward observations.
+Valid V12 forward observation count remains zero until a run records connector_available = Yes and scan_executed = Yes.
+
+Workflow Inspected
+- File: .github/workflows/v12-forward-observation.yml
+- Workflow name: V12 Forward Observation
+- Schedule: 7,22,37,52 * * * *
+- Expected cadence: 96 runs per day
+- Manual trigger: workflow_dispatch
+- Python version: 3.11
+- Dependency install: pip install -r requirements.txt
+- Scan command: python scripts/run_v12_scan_once.py
+- Commit-back files:
+  - logs/v12_signals.csv
+  - logs/v12_observation_heartbeat.csv
+  - logs/runtime_errors.log
+
+Entrypoint Inspected
+- File: scripts/run_v12_scan_once.py
+- Instantiates TradingEngine(deepcopy(ENGINE_CONFIG))
+- Forces execute_orders = False
+- Checks whether "binance" exists in engine.connectors
+- Emits "binance connector unavailable; no scan executed" when "binance" is missing from engine.connectors
+
+Connector Initialization Path
+- engine.py imports BINANCE_API_KEY and BINANCE_API_SECRET from config.py
+- config.py reads:
+  - BINANCE_TESTNET_KEY
+  - BINANCE_TESTNET_SECRET
+- TradingEngine._setup_connectors skips any exchange with missing api_key or api_secret
+- ExchangeConnector uses ccxt.async_support
+- Binance connector uses ccxt.binance with options defaultType = future
+- testnet=True calls set_sandbox_mode(True) and points public/private URLs to https://testnet.binancefuture.com
+
+Endpoint Type
+V12 currently uses Binance USDT-M futures testnet through ccxt unified exchange calls.
+
+Primary Data Call
+engine._fetch_ohlcv_df() calls:
+connectors["binance"].fetch_ohlcv(symbol, timeframe, limit)
+
+Dependency Check
+requirements.txt includes:
+- pandas
+- numpy
+- ccxt
+- aiohttp
+- aiodns
+
+Local dependency import check passed:
+- pandas import PASS
+- numpy import PASS
+- ccxt import PASS
+- aiohttp import PASS
+
+Failure Reason
+The workflow did not pass BINANCE_TESTNET_KEY or BINANCE_TESTNET_SECRET into the "Run V12 scan once" step.
+
+Because GitHub Actions step environments only include explicitly mapped secrets, config.py received empty Binance credentials. TradingEngine._setup_connectors therefore skipped the Binance connector before any endpoint call was made.
+
+This is not proven to be a Binance network block. The scan never reached a Binance endpoint.
+
+Local Confirmation
+Local environment check:
+- BINANCE_TESTNET_KEY_present = False
+- BINANCE_TESTNET_SECRET_present = False
+
+Local scan validation:
+- completed = Yes
+- heartbeat_state = connector_unavailable
+- connector_available = No
+- data_fetch_success = No
+- scan_executed = No
+- signal_found = No
+- connector_failure_category = missing_binance_testnet_secret
+
+Scoped Fix Applied
+.github/workflows/v12-forward-observation.yml now passes:
+- BINANCE_TESTNET_KEY: ${{ secrets.BINANCE_TESTNET_KEY }}
+- BINANCE_TESTNET_SECRET: ${{ secrets.BINANCE_TESTNET_SECRET }}
+
+This is an infrastructure wiring fix only.
+No V12 strategy logic, thresholds, entry/exit, source replacement, or E2 integration was changed.
+
+Remaining Requirement
+GitHub repository secrets must actually contain valid BINANCE_TESTNET_KEY and BINANCE_TESTNET_SECRET values.
+
+Diagnosis Classification:
+V12 CONNECTOR BLOCKED — SECRET / ENV

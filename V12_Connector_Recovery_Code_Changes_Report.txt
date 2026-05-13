@@ -1,0 +1,56 @@
+V12 Connector Recovery Code Changes Report
+
+Scope:
+Infrastructure correctness and observability only.
+
+Files Modified
+- .github/workflows/v12-forward-observation.yml
+- scripts/run_v12_scan_once.py
+- logs/v12_observation_heartbeat.csv
+
+Workflow Change
+The V12 scan step now maps the required Binance testnet secrets into the process environment:
+- BINANCE_TESTNET_KEY
+- BINANCE_TESTNET_SECRET
+
+Reason:
+config.py reads these exact environment variable names. Without them, TradingEngine._setup_connectors skips the Binance connector and the scan never executes.
+
+Heartbeat Code Change
+scripts/run_v12_scan_once.py now records:
+- heartbeat_state
+- data_fetch_success
+- scan_executed
+- connector_failure_category
+- binance_testnet_key_present
+- binance_testnet_secret_present
+
+Heartbeat Schema Migration
+The heartbeat writer upgrades the existing logs/v12_observation_heartbeat.csv header to the new schema and preserves old rows.
+
+Local Validation
+Commands:
+- python -m py_compile scripts\run_v12_scan_once.py
+- python scripts\run_v12_scan_once.py
+
+Result:
+- Compile passed.
+- Local heartbeat row was written.
+- Local row correctly reported connector_unavailable and missing_binance_testnet_secret.
+
+Valid Scan Status
+No valid V12 scan was executed during this task.
+
+Reason:
+The local environment does not contain BINANCE_TESTNET_KEY or BINANCE_TESTNET_SECRET.
+
+No Strategy Changes
+- No V12 entry logic changed.
+- No V12 exit logic changed.
+- No thresholds changed.
+- No strategy parameters changed.
+- No Binance-to-Bybit replacement.
+- No E2-to-V12 integration.
+- No backtest.
+- No outcome testing.
+- No live or paper order logic.

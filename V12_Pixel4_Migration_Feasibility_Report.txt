@@ -1,0 +1,102 @@
+V12 Pixel 4 Migration Feasibility Report
+
+Task type:
+Feasibility only.
+
+No V12 migration was performed.
+No Pixel 4 scheduling was enabled.
+No Binance-to-Bybit replacement was made.
+No strategy or signal logic was changed.
+
+Dependency Requirements
+From requirements.txt and V12 scan path:
+- Python 3.11+ preferred
+- python-dotenv
+- pandas
+- numpy
+- ccxt
+- aiohttp
+- aiodns
+- google-api-python-client
+- google-auth
+
+Likely Termux Compatibility
+- python: expected compatible
+- pandas/numpy: usually installable in Termux, but may require current Termux packages and enough storage
+- ccxt/aiohttp/aiodns: expected compatible
+- google API libraries: expected compatible
+
+Required Environment Variables
+V12 Binance connector requires:
+- BINANCE_TESTNET_KEY
+- BINANCE_TESTNET_SECRET
+
+Optional notification / logging integrations may require:
+- TG_BOT_TOKEN
+- TG_CHAT_ID
+- TG_COMMENT_CHAT_ID
+- TG_COMMENT_THREAD_ID
+- GEMINI_API_KEY
+- GOOGLE_SHEET_ID
+- GOOGLE_SERVICE_ACCOUNT_JSON
+
+Pixel 4 Manual Test Instructions
+Run these in Termux from the QuantCore repo root.
+
+1. Check Python:
+python --version
+
+2. Install dependencies:
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+
+3. Import dependency check:
+python -c "import pandas,numpy,ccxt,aiohttp; print('dependency import PASS')"
+
+4. Confirm Binance testnet secrets are present:
+python -c "import os; print(bool(os.getenv('BINANCE_TESTNET_KEY')), bool(os.getenv('BINANCE_TESTNET_SECRET')))"
+
+5. Binance futures testnet connectivity:
+curl -I "https://testnet.binancefuture.com/fapi/v1/exchangeInfo"
+
+6. ccxt Binance futures testnet OHLCV smoke check:
+python - <<'PY'
+import asyncio
+import ccxt.async_support as ccxt
+
+async def main():
+    ex = ccxt.binance({"enableRateLimit": True, "options": {"defaultType": "future"}})
+    ex.set_sandbox_mode(True)
+    ex.urls["api"]["public"] = "https://testnet.binancefuture.com"
+    ex.urls["api"]["private"] = "https://testnet.binancefuture.com"
+    try:
+        rows = await ex.fetch_ohlcv("BTC/USDT:USDT", "1h", limit=2)
+        print(rows)
+    finally:
+        await ex.close()
+
+asyncio.run(main())
+PY
+
+7. V12 no-order scan:
+python scripts/run_v12_scan_once.py
+
+Expected valid recovery condition:
+- heartbeat_state = valid_no_signal or signal_found
+- connector_available = Yes
+- data_fetch_success = Yes
+- scan_executed = Yes
+
+Invalid conditions:
+- heartbeat_state = connector_unavailable
+- heartbeat_state = data_fetch_failed
+- scan_executed = No
+
+Notes
+If Pixel 4 can access Bybit but not Binance, that does not recover V12. V12 currently uses Binance futures testnet, and replacing Binance with Bybit requires a separate Claude data-source decision.
+
+Feasibility Classification:
+V12 PIXEL4 NOT TESTED — USER DEVICE REQUIRED
+
+Reason:
+Codex cannot directly execute Termux commands on the Pixel 4. Dependencies appear feasible, but Binance futures testnet access and V12 dry-run success must be confirmed on-device.

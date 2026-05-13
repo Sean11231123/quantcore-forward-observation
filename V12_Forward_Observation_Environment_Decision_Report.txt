@@ -1,0 +1,102 @@
+V12 Forward Observation Environment Decision Report
+
+Task type:
+Infrastructure decision report only.
+
+Current Official Status
+V12 FORWARD BLOCKED
+
+No valid V12 forward observation has resumed.
+Valid observation requires connector_available = Yes and scan_executed = Yes.
+
+Option A - Keep V12 on GitHub-hosted runner
+
+Connector availability:
+Potentially recoverable if BINANCE_TESTNET_KEY and BINANCE_TESTNET_SECRET exist as GitHub repository secrets.
+
+Reliability:
+Unknown until a manual workflow_dispatch or scheduled run records heartbeat_state = valid_no_signal or signal_found.
+
+Security:
+Good if using GitHub Secrets. No private keys are written to logs by the current diagnostic change; only presence booleans are written.
+
+Maintenance burden:
+Low if secrets are configured and Binance testnet access works from GitHub-hosted runners.
+
+Compatibility with current V12 logic:
+High. This preserves the existing Binance futures testnet connector and does not change V12 source data.
+
+Observation sample validity:
+Valid only after heartbeat rows show connector_available = Yes, data_fetch_success = Yes, and scan_executed = Yes.
+
+Option B - Move V12 to Pixel 4 local collector mode
+
+Connector availability:
+Not tested by Codex. Must be tested on-device against https://testnet.binancefuture.com.
+
+Reliability:
+Potentially good if Termux cron and GitHub push backup are already stable from E2, but V12-specific dependencies and Binance testnet access still need confirmation.
+
+Security:
+Requires safe storage of BINANCE_TESTNET_KEY and BINANCE_TESTNET_SECRET on the Pixel 4.
+
+Maintenance burden:
+Moderate. Pixel 4 already runs E2, but V12 introduces a separate scan cadence and credential path.
+
+Compatibility with current V12 logic:
+High if using the same Binance futures testnet connector and same command.
+
+Observation sample validity:
+Valid only after a Pixel 4 run records connector_available = Yes and scan_executed = Yes.
+
+Option C - Other Environment
+
+Examples:
+- VPS
+- self-hosted GitHub runner
+- local desktop scheduler
+
+Connector availability:
+Likely best if GitHub-hosted runner cannot access Binance testnet or if Pixel 4 dependency setup is brittle.
+
+Reliability:
+Potentially high for VPS or self-hosted runner.
+
+Security:
+Depends on secret handling and host hardening.
+
+Maintenance burden:
+Higher than GitHub-hosted Actions, lower than mobile-only if managed carefully.
+
+Compatibility with current V12 logic:
+High if using the same Binance futures testnet connector.
+
+Observation sample validity:
+Valid only after heartbeat rows show connector_available = Yes and scan_executed = Yes.
+
+Option D - Keep V12 paused
+
+Use if:
+- Binance testnet secrets are unavailable
+- Binance testnet endpoint is blocked from all practical environments
+- user / Claude does not approve any environment change
+
+Recommended Next Action
+1. Verify GitHub repository secrets exist:
+   - BINANCE_TESTNET_KEY
+   - BINANCE_TESTNET_SECRET
+2. Manually dispatch V12 Forward Observation on GitHub.
+3. Inspect logs/v12_observation_heartbeat.csv.
+4. Restart valid V12 forward observation count only if the new row shows:
+   - heartbeat_state = valid_no_signal or signal_found
+   - connector_available = Yes
+   - data_fetch_success = Yes
+   - scan_executed = Yes
+
+If GitHub still fails after secrets are confirmed, test the Pixel 4 commands in V12_Pixel4_Migration_Feasibility_Report.txt.
+
+Final Classification:
+V12 REMAINS BLOCKED
+
+Reason:
+The likely GitHub secret/env wiring issue was fixed in the workflow, and heartbeat observability was improved, but no real V12 run has yet confirmed connector_available = Yes and scan_executed = Yes.
