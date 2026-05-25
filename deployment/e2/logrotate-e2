@@ -1,0 +1,11 @@
+/var/log/quantcore/e2-collector.log
+/var/log/quantcore/e2-collector.err.log
+/var/log/quantcore/e2-health.log
+/var/log/quantcore/e2-health.err.log {
+    daily
+    rotate 14
+    compress
+    missingok
+    notifempty
+    copytruncate
+}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Run E2 Bybit hourly forward collector
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=90
+Unit=e2-collector.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,79 @@
+E2 VPS Migration Code Changes Report
+Generated: 2026-05-25
+
+Code/File Changes Made
+
+Added audit and health scripts:
+- scripts/e2_forward_health_check.py
+- scripts/e2_missing_hour_audit.py
+
+Added VPS deployment templates:
+- deployment/e2/e2-collector.service
+- deployment/e2/e2-collector.timer
+- deployment/e2/e2-health.service
+- deployment/e2/e2-health.timer
+- deployment/e2/e2_commit_back.sh
+- deployment/e2/logrotate-e2
+
+Generated health report:
+- data/forward/crypto_derivatives/e2_forward_health_report.txt
+
+Documentation/report files:
+- E2_Collector_Environment_Decision_Report.txt
+- E2_VPS_Migration_Plan.txt
+- E2_Forward_Data_Quality_Audit_Report.txt
+- E2_Mobile_Collector_Archive_Report.txt
+- E2_VPS_Migration_Code_Changes_Report.txt
+
+What Did Not Change
+
+- No Pixel 4 access was required.
+- No Pixel 4 scripts were deleted.
+- No Pixel 4 cron, watchdog, Termux, or Android setting was modified.
+- No historical rows were edited.
+- No backfill was performed.
+- No synthetic rows were created.
+- bybit_hourly.csv schema was not changed.
+- No strategy code was modified.
+- No E2-to-V12 connection was added.
+- No outcome tests or alpha analysis were run.
+
+Validation
+
+py_compile:
+python -m py_compile scripts/e2_forward_health_check.py scripts/e2_missing_hour_audit.py
+Result: passed.
+
+Health script:
+python scripts/e2_forward_health_check.py
+Result: ran successfully and generated data/forward/crypto_derivatives/e2_forward_health_report.txt.
+
+Audit script:
+python scripts/e2_missing_hour_audit.py
+Result: ran successfully against existing bybit_hourly.csv.
+
+Current data classification:
+E2_FORWARD_BLOCKED_NO_RECENT_DATA
+
+Validation Findings
+
+- total_rows: 392
+- first_data_timestamp_utc: 2026-05-11T15:00:00Z
+- latest_data_timestamp_utc: 2026-05-12T21:00:00Z
+- missing_hours_last_24h: 24
+- incomplete_hours_last_24h: 0
+- duplicate_rows_last_24h: 0
+- malformed_rows: 0
+- unexpected_symbols: 0
+
+Schema Preservation
+
+Expected schema:
+fetch_timestamp_utc,data_timestamp_utc,symbol,last_price,mark_price,index_price,open_interest,funding_rate
+
+Observed schema:
+matched expected schema.
+
+Historical Data Handling
+
+Historical rows were untouched. Missing hours remain missing by policy.

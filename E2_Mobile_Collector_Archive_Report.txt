@@ -1,0 +1,66 @@
+E2 Mobile Collector Archive Report
+Generated: 2026-05-25
+
+Final Classification
+
+E2 PIXEL4 MOBILE COLLECTOR UNRELIABLE / FALLBACK ONLY
+
+Pixel 4 Access Status
+
+The user currently does not have physical access to the Pixel 4.
+
+Therefore all Pixel 4 operational checks, script edits, log reads, watchdog setup, cron changes, Termux changes, Android setting changes, and manual recovery actions are paused.
+
+What Worked
+
+- Bybit API access worked on Pixel 4.
+- 19-symbol collection worked when Termux/crond was active.
+- GitHub push worked when the scheduler was alive.
+- The collector wrote the preserved bybit_hourly.csv schema.
+
+What Failed
+
+- Android/Termux background reliability failed for unattended continuous collection.
+- crond stopped while device uptime continued.
+- Local missing hours were observed.
+- The device could remain powered on without the scheduler continuing reliably.
+
+Why It Is Fallback Only
+
+The collector logic and Bybit access were not the primary failure. The failure was mobile runtime supervision. Android and Termux cannot be treated as a production-grade, unattended, hourly collection environment for this use case.
+
+Preserved Scripts/Data
+
+Do not delete Pixel 4 scripts.
+Do not delete existing E2 data.
+Do not repair historical Pixel 4 gaps.
+
+Current preserved target:
+data/forward/crypto_derivatives/bybit_hourly.csv
+
+No Strategy Implications
+
+This archive decision has no strategy implications.
+
+It does not:
+- change strategy logic
+- run outcome tests
+- create alpha labels
+- connect E2 to V12
+- perform live trading
+- perform paper trading
+
+No-Backfill Policy
+
+Existing missing hours must remain missing.
+
+Do not:
+- backfill
+- synthesize rows
+- overwrite historical rows
+- infer missing values
+- repair Pixel 4 data gaps
+
+Future Pixel 4 Use
+
+Pixel 4 may be used only as a fallback/manual backup after the user regains physical access. It should not be restored as the primary production collector.

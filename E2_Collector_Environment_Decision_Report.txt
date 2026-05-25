@@ -1,0 +1,147 @@
+E2 Collector Environment Decision Report
+Generated: 2026-05-25
+
+Current E2 Status
+
+Official classification:
+E2 Pixel 4 Mobile Collector = UNRELIABLE / FALLBACK ONLY
+
+E2 is forward data collection infrastructure only. This decision does not change strategy logic, run outcome tests, connect E2 to V12, replace the exchange/source, or create live or paper trading behavior.
+
+Current target output:
+data/forward/crypto_derivatives/bybit_hourly.csv
+
+Preserved schema:
+fetch_timestamp_utc,data_timestamp_utc,symbol,last_price,mark_price,index_price,open_interest,funding_rate
+
+Why Pixel 4 Is Fallback Only
+
+Known facts from existing project status:
+- Bybit API access worked on Pixel 4.
+- 19-symbol collection worked when Termux/crond was active.
+- GitHub push worked when the scheduler was alive.
+- Android/Termux background reliability failed.
+- crond stopped while device uptime continued.
+- Local missing hours were observed.
+- Pixel 4 is not production-grade for unattended collection.
+- Existing missing hours must remain missing.
+
+The failure mode is not data-source availability. The failure mode is mobile process supervision. Android and Termux can keep the device powered while stopping or deprioritizing the background scheduler. That makes the collector unreliable for continuous unattended hourly forward data.
+
+Why GitHub-Hosted Runner Is Not Enough
+
+GitHub-hosted runners are useful for visibility, CI, and manual workflows, but they are not a sufficient production runtime for this E2 collector because:
+- Previous GitHub-hosted collection was blocked by exchange access failures.
+- Runner network identity is not stable or controlled by the project.
+- Green workflow status can mean the workflow ran, not that the exchange returned complete data.
+- Hosted runners are ephemeral and do not preserve local collector state beyond artifacts or commits.
+- Collection reliability should not depend on third-party CI scheduling and exchange tolerance of CI IP ranges.
+
+GitHub should remain the storage and visibility layer. It should not be the primary crypto derivatives collection runtime.
+
+Evaluated Environment Options
+
+Option A: Pixel 4 primary
+Decision: rejected as primary, retained as fallback only.
+Reason: Bybit access worked, but Android/Termux scheduling was not reliable enough for unattended forward collection.
+
+Option B: GitHub-hosted Actions primary
+Decision: rejected.
+Reason: blocked exchange access and no durable local runtime.
+
+Option C: Home desktop/laptop primary
+Decision: not recommended.
+Reason: depends on user machine power, sleep state, network stability, and manual maintenance.
+
+Option D: Hybrid VPS primary plus Pixel 4 fallback
+Decision: recommended.
+Reason: low-cost Linux VPS provides stable power, network, systemd timers, file locks, logs, and operational recovery while preserving GitHub commit-back for visibility.
+
+Recommended Hybrid Architecture
+
+Primary:
+- Low-cost Linux VPS.
+- Ubuntu 24.04 LTS or Debian 12.
+- Dedicated non-root user: quantcore.
+- Python virtual environment.
+- systemd service and timer for hourly collection.
+- systemd service and timer for health report and GitHub commit-back.
+- flock lock files to prevent overlapping runs.
+- local append-only CSV preservation.
+- log files under /var/log/quantcore with logrotate.
+
+Storage and visibility:
+- GitHub repository receives committed CSV and health report changes.
+- GitHub is not the runtime.
+
+Fallback:
+- Pixel 4 is manual/fallback only.
+- No Pixel 4 access is required for this decision.
+- Pixel 4 recovery, cron edits, watchdogs, logs, and manual operations remain paused.
+
+Minimum VPS Feasibility Evaluation
+
+Minimum hardware:
+- 1 vCPU.
+- 512 MB RAM minimum, 1 GB recommended.
+- 10 GB disk minimum, 20 GB recommended.
+- IPv4 or stable outbound IPv6 capable of reaching Bybit.
+
+Recommended OS:
+- Ubuntu 24.04 LTS preferred.
+- Debian 12 acceptable.
+
+Python:
+- Python 3.10 or newer.
+- Python 3.11 or 3.12 recommended.
+- Current collector uses standard library urllib/csv/json only.
+- Git and systemd are required.
+
+Packages:
+- python3
+- python3-venv
+- git
+- ca-certificates
+- util-linux for flock
+- logrotate
+
+Disk estimate:
+- Current CSV growth is small. At 19 rows per hour and roughly 150 to 250 bytes per row, expected raw CSV growth is approximately 2.6 MB to 4.2 MB per year.
+- Logs may exceed data size. Rotate daily and keep 14 to 30 days.
+- 10 GB is enough; 20 GB gives comfortable operating margin.
+
+Bandwidth estimate:
+- Hourly requests for 19 symbols plus git push are light.
+- Expected API response traffic is well below 1 GB/month.
+- Git push traffic depends on repository size and commit frequency, but changed data volume should remain small.
+
+Expected monthly cost:
+- Typical low-cost VPS range: USD 4 to USD 8/month.
+- USD 10 to USD 12/month provides more operational cushion.
+
+Credential and security handling:
+- Use a GitHub deploy key with write access to only this repo, or a fine-scoped GitHub token stored outside the repo.
+- Prefer SSH deploy key under /home/quantcore/.ssh with strict file permissions.
+- Do not store secrets in tracked files.
+- Run systemd services as non-root user quantcore.
+- Restrict inbound firewall; outbound HTTPS and SSH are sufficient.
+
+Process supervision:
+- Preferred: systemd service + timer.
+- Acceptable fallback: cron + flock + health check.
+- Supervisor is not necessary for oneshot hourly jobs.
+
+Failure recovery behavior:
+- If collection fails for one hour, preserve existing CSV and report missing/incomplete hours.
+- If push fails, preserve local data and retry on the next health/push timer.
+- If a run overlaps, flock exits and prevents concurrent writes.
+- If schema is invalid, health classification blocks.
+- Do not backfill, synthesize, overwrite, or repair historical rows.
+
+Final Recommendation
+
+Adopt Option D:
+VPS / always-on Linux as primary collector, Pixel 4 as fallback/manual backup only, GitHub as storage and visibility layer.
+
+Final infrastructure classification:
+E2_FORWARD_PRIMARY_VPS_RECOMMENDED_PIXEL4_FALLBACK_ONLY

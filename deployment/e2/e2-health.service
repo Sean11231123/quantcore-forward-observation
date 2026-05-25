@@ -1,0 +1,15 @@
+[Unit]
+Description=E2 forward health report generation and commit-back
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/quantcore/quantcore-forward-observation
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/flock -n /var/lock/e2-health.lock /home/quantcore/quantcore-forward-observation/.venv/bin/python /home/quantcore/quantcore-forward-observation/scripts/e2_forward_health_check.py
+ExecStartPost=/bin/bash /home/quantcore/quantcore-forward-observation/deployment/e2/e2_commit_back.sh
+StandardOutput=append:/var/log/quantcore/e2-health.log
+StandardError=append:/var/log/quantcore/e2-health.err.log
+User=quantcore
+Group=quantcore

@@ -8,13 +8,14 @@ It does not create signals, merge futures data with crypto returns, run outcome 
 
 GitHub-hosted E2 production is disabled.
 
-Current E2 production path:
+Current E2 production path is being migrated away from the mobile collector:
 
-- Pixel 4 Mobile Collector
-- Termux + cron hourly run
+- VPS / always-on Linux primary collector recommended
+- Pixel 4 Mobile Collector fallback/manual backup only
+- Termux + cron hourly run paused until physical Pixel 4 access returns
 - append-only CSV storage
 - duplicate prevention
-- GitHub push cloud backup
+- GitHub push cloud backup / visibility layer
 
 Reason:
 GitHub-hosted Actions was formally classified as E2 BLOCKED for production collection after Binance returned HTTP 451 and Bybit returned HTTP 403 from GitHub-hosted runners. Green workflow status did not imply successful data collection.
@@ -79,7 +80,9 @@ The former active GitHub-hosted crypto derivatives workflow `.github/workflows/e
 
 `.github/workflows/e2_unified_forward_logger_proposed.yml` is a proposed manual futures workflow. It requires a `confirm_yahoo_tos` input of `YES` before running the futures fetch.
 
-Pixel 4 Mobile Collector is the current E2 production collector. GitHub is used as cloud backup via pushes from the mobile collector, not as the hosted production runtime for crypto derivatives collection.
+Pixel 4 Mobile Collector is now classified as unreliable / fallback only. GitHub is used as cloud backup and visibility, not as the hosted production runtime for crypto derivatives collection.
+
+Existing missing hours remain missing. Do not backfill, synthesize rows, overwrite historical forward data, or repair Pixel 4 data gaps.
 
 ## Governance
 

@@ -1,0 +1,187 @@
+E2 VPS Migration Plan
+Generated: 2026-05-25
+
+Purpose
+
+Move E2 forward data collection from Pixel 4 primary operation to a production-like Linux VPS primary collector while preserving the existing CSV schema and all historical gaps.
+
+VPS Requirements
+
+Minimum:
+- 1 vCPU.
+- 512 MB RAM.
+- 10 GB disk.
+- Ubuntu 24.04 LTS or Debian 12.
+- Stable outbound internet access to Bybit and GitHub.
+
+Recommended:
+- 1 vCPU.
+- 1 GB RAM.
+- 20 GB disk.
+- Ubuntu 24.04 LTS.
+- SSH access using keys only.
+
+Package Installation Plan
+
+Install:
+- python3
+- python3-venv
+- git
+- ca-certificates
+- util-linux
+- logrotate
+
+No paid data source or exchange/data-source replacement is required.
+
+Directory Layout
+
+Recommended deployment path:
+/home/quantcore/quantcore-forward-observation
+
+Runtime files:
+/home/quantcore/quantcore-forward-observation/data/forward/crypto_derivatives/bybit_hourly.csv
+/home/quantcore/quantcore-forward-observation/data/forward/crypto_derivatives/e2_forward_health_report.txt
+
+Logs:
+/var/log/quantcore/e2-collector.log
+/var/log/quantcore/e2-collector.err.log
+/var/log/quantcore/e2-health.log
+/var/log/quantcore/e2-health.err.log
+
+Locks:
+/var/lock/e2-collector.lock
+/var/lock/e2-health.lock
+
+Setup Steps
+
+1. Provision VPS using Ubuntu 24.04 LTS or Debian 12.
+2. Create non-root user quantcore.
+3. Install required packages.
+4. Clone the repository into /home/quantcore/quantcore-forward-observation.
+5. Create a Python virtual environment at /home/quantcore/quantcore-forward-observation/.venv.
+6. Validate Python can run e2_collector.py and scripts/e2_forward_health_check.py.
+7. Configure Git identity for the quantcore user.
+8. Configure GitHub write access using an SSH deploy key or fine-scoped token.
+9. Copy deployment/e2/*.service and deployment/e2/*.timer into /etc/systemd/system/.
+10. Copy deployment/e2/logrotate-e2 into /etc/logrotate.d/e2.
+11. Create /var/log/quantcore and assign ownership/permissions for the quantcore service user.
+12. Run systemctl daemon-reload.
+13. Enable and start e2-collector.timer and e2-health.timer.
+14. Confirm health report is generated.
+15. Confirm GitHub commit-back works.
+
+Systemd Plan
+
+Collector:
+- e2-collector.service runs e2_collector.py as a oneshot job.
+- e2-collector.timer runs hourly.
+- flock prevents overlapping writes.
+- output and error logs append under /var/log/quantcore.
+
+Health and commit-back:
+- e2-health.service runs scripts/e2_forward_health_check.py.
+- e2-health.timer runs hourly at minute 10.
+- e2_commit_back.sh pulls/rebases, stages bybit_hourly.csv and the health report, commits only if there are changes, and pushes.
+
+Git Credential Approach
+
+Preferred:
+- GitHub SSH deploy key scoped to this repository.
+- Private key stored at /home/quantcore/.ssh/id_ed25519 or a dedicated key path.
+- chmod 700 /home/quantcore/.ssh.
+- chmod 600 private key.
+
+Acceptable:
+- Fine-scoped GitHub token stored in the quantcore user's credential manager or environment file outside the repo.
+
+Do not commit secrets, tokens, SSH keys, or .env files.
+
+Health Check Plan
+
+Use:
+python scripts/e2_forward_health_check.py
+
+Generated report:
+data/forward/crypto_derivatives/e2_forward_health_report.txt
+
+The report includes:
+- generated_at_utc
+- data_file
+- expected_symbol_count
+- total_rows
+- first_data_timestamp_utc
+- latest_data_timestamp_utc
+- latest_fetch_timestamp_utc
+- latest_data_lag_hours
+- complete_hours_last_24h
+- missing_hours_last_24h
+- incomplete_hours_last_24h
+- duplicate_rows_last_24h
+- malformed_rows
+- unexpected_symbols
+- current_git_commit
+- push lag fields where detectable
+- classification
+
+Missing-Hour Audit Plan
+
+Use:
+python scripts/e2_missing_hour_audit.py
+
+The audit detects:
+- missing hourly timestamps
+- incomplete hours with fewer than 19 expected symbols
+- duplicate symbol rows per hour
+- latest data lag
+- push lag where detectable through git history
+- malformed rows
+- unexpected symbols
+
+Log Rotation Plan
+
+Use deployment/e2/logrotate-e2:
+- rotate daily
+- keep 14 compressed rotations
+- skip missing or empty logs
+- copytruncate for append-only service logs
+
+Rollback Plan
+
+Rollback does not rewrite history and does not modify data rows.
+
+If VPS collection fails:
+1. Stop timers: systemctl stop e2-collector.timer e2-health.timer.
+2. Leave local CSV and logs intact.
+3. Inspect health report and systemd logs.
+4. Fix service, credential, network, or exchange-access issue.
+5. Restart timers.
+6. Missing hours remain missing.
+
+Pixel 4 can be used only as fallback/manual backup after the user regains physical access. No Pixel 4 recovery is required for this migration decision.
+
+Security Notes
+
+- Run services as quantcore, not root.
+- Limit GitHub credential scope.
+- Disable password SSH if possible.
+- Keep firewall closed except required SSH administration.
+- Avoid storing Bybit secrets; the current collector uses public market endpoints.
+- Keep system package updates current.
+
+Manual Deployment Checklist
+
+[ ] VPS provisioned.
+[ ] quantcore user created.
+[ ] Repository cloned to /home/quantcore/quantcore-forward-observation.
+[ ] Python venv created.
+[ ] GitHub write credential configured.
+[ ] /var/log/quantcore created with correct permissions.
+[ ] systemd unit files installed.
+[ ] logrotate file installed.
+[ ] timers enabled and started.
+[ ] First collector run observed.
+[ ] Health report generated.
+[ ] GitHub commit-back confirmed.
+[ ] Pixel 4 documented as fallback only.
+[ ] No historical rows overwritten.
+[ ] No schema change made.

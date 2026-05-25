@@ -1,0 +1,27 @@
+E2 Forward Health Report
+generated_at_utc: 2026-05-25T02:55:28Z
+data_file: data\forward\crypto_derivatives\bybit_hourly.csv
+expected_symbol_count: 19
+total_rows: 392
+first_data_timestamp_utc: 2026-05-11T15:00:00Z
+latest_data_timestamp_utc: 2026-05-12T21:00:00Z
+latest_fetch_timestamp_utc: 2026-05-12T21:01:16.021821Z
+latest_data_lag_hours: 293.925
+complete_hours_last_24h: 0
+missing_hours_last_24h: 24
+incomplete_hours_last_24h: 0
+duplicate_rows_last_24h: 0
+malformed_rows: 0
+unexpected_symbols: 0
+unexpected_symbol_values: 
+current_git_commit: 1ebf0c4
+data_file_git_commit: 067fbe3
+data_file_git_commit_time_utc: 2026-05-13T06:00:02+08:00
+push_lag_hours: 292.924
+classification: E2_FORWARD_BLOCKED_NO_RECENT_DATA
+
+Policy
+missing_hours: preserve_as_missing_do_not_backfill
+historical_rows: untouched
+schema: preserved
+pixel4_status: fallback_only

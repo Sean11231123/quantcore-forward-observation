@@ -1,0 +1,14 @@
+[Unit]
+Description=E2 Bybit hourly forward collector
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/quantcore/quantcore-forward-observation
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/flock -n /var/lock/e2-collector.lock /home/quantcore/quantcore-forward-observation/.venv/bin/python /home/quantcore/quantcore-forward-observation/e2_collector.py
+StandardOutput=append:/var/log/quantcore/e2-collector.log
+StandardError=append:/var/log/quantcore/e2-collector.err.log
+User=quantcore
+Group=quantcore

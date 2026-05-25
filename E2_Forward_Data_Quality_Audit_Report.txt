@@ -1,0 +1,127 @@
+E2 Forward Data Quality Audit Report
+Generated: 2026-05-25
+
+Scope
+
+This report covers data-quality governance for:
+data/forward/crypto_derivatives/bybit_hourly.csv
+
+This is not strategy research, outcome testing, alpha analysis, backtesting, V12 integration, live trading, or paper trading.
+
+Preserved Schema
+
+fetch_timestamp_utc
+data_timestamp_utc
+symbol
+last_price
+mark_price
+index_price
+open_interest
+funding_rate
+
+No schema change was implemented.
+
+Expected Symbol Universe
+
+BTCUSDT
+ETHUSDT
+SOLUSDT
+XRPUSDT
+ADAUSDT
+DOGEUSDT
+LINKUSDT
+AVAXUSDT
+BNBUSDT
+LTCUSDT
+BCHUSDT
+APTUSDT
+ARBUSDT
+OPUSDT
+SUIUSDT
+POLUSDT
+NEARUSDT
+DOTUSDT
+TRXUSDT
+
+FTMUSDT remains excluded because Bybit coverage was previously unreliable/missing.
+
+Known Data-Quality Issue Types
+
+- Missing hourly timestamp.
+- Incomplete hour with fewer than 19 expected symbols.
+- Duplicate rows for the same data_timestamp_utc and symbol.
+- Latest data lag.
+- Push lag where detectable from git history.
+- Malformed rows.
+- Unexpected symbols.
+- Schema invalid or missing file.
+
+Missing-Hour Handling Policy
+
+Existing missing hours remain missing.
+
+Do not:
+- backfill
+- synthesize rows
+- overwrite historical rows
+- repair Pixel 4 data gaps
+- infer missing values from later data
+
+Missing hours should be surfaced through audit and health reports only.
+
+Incomplete-Hour Handling Policy
+
+Incomplete hours are retained as originally collected. They should be marked by audit logic and reviewed operationally, but not repaired by synthetic rows.
+
+No-Backfill Rule
+
+The forward dataset is an append-only evidence record. Historical gaps are part of the record and must be preserved.
+
+Implemented Audit Logic
+
+Added:
+scripts/e2_forward_health_check.py
+scripts/e2_missing_hour_audit.py
+
+The audit logic checks:
+- exact schema match
+- parseable fetch and data timestamps
+- numeric price/open-interest/funding fields
+- unexpected symbols
+- missing hours in the most recent 24-hour window
+- incomplete hours in the most recent 24-hour window
+- duplicate symbol rows per hour
+- latest data lag
+- current git commit and data-file git commit where available
+- push lag where inferable from git commit time
+
+Health Report Output
+
+Generated:
+data/forward/crypto_derivatives/e2_forward_health_report.txt
+
+Current Dataset Classification From Local Audit
+
+classification:
+E2_FORWARD_BLOCKED_NO_RECENT_DATA
+
+Observed during validation:
+- total_rows: 392
+- first_data_timestamp_utc: 2026-05-11T15:00:00Z
+- latest_data_timestamp_utc: 2026-05-12T21:00:00Z
+- latest_fetch_timestamp_utc: 2026-05-12T21:01:16.021821Z
+- latest_data_lag_hours: approximately 293.925 at validation time
+- complete_hours_last_24h: 0
+- missing_hours_last_24h: 24
+- incomplete_hours_last_24h: 0
+- duplicate_rows_last_24h: 0
+- malformed_rows: 0
+- unexpected_symbols: 0
+
+Interpretation
+
+The current data file is schema-valid but stale. This is expected under the current paused Pixel 4 state and does not trigger any backfill or repair action.
+
+Required Governance Result
+
+Historical rows were untouched. Missing hours remain missing. Schema is preserved.

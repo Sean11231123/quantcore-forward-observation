@@ -1,0 +1,11 @@
+[Unit]
+Description=Generate E2 forward health report and push changed files
+
+[Timer]
+OnCalendar=*:10
+Persistent=true
+RandomizedDelaySec=120
+Unit=e2-health.service
+
+[Install]
+WantedBy=timers.target
