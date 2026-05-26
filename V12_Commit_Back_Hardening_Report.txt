@@ -1,0 +1,81 @@
+V12 Commit-Back Hardening Report
+Generated: 2026-05-26
+
+Scope
+
+Infrastructure reliability fix only.
+
+This change does not modify V12 strategy logic, entry/exit logic, thresholds, confidence scoring, signal generation, live trading, paper trading, data sources, E2 integration, backtests, or alpha analysis.
+
+Issue Fixed
+
+The V12 Forward Observation workflow commit-back step could emit/fail around:
+
+fatal: pathspec 'logs/runtime_errors.log' did not match any files
+
+The same failed workflow also saw a GitHub push rejection with Internal Server Error.
+
+logs/runtime_errors.log is optional. Valid no-signal V12 forward observation runs commonly do not create a runtime error log.
+
+Files Changed
+
+- .github/workflows/v12-forward-observation.yml
+
+Exact Fix
+
+The commit-back step now:
+
+1. Always attempts to stage:
+   - logs/v12_signals.csv
+   - logs/v12_observation_heartbeat.csv
+
+2. Adds logs/runtime_errors.log only if it exists:
+   if [ -f logs/runtime_errors.log ]; then
+     git add logs/runtime_errors.log
+   else
+     echo "logs/runtime_errors.log not present; skipping optional runtime error log"
+   fi
+
+3. Exits cleanly if there are no staged changes:
+   git diff --cached --quiet
+
+4. Creates at most one commit per workflow run.
+
+5. Retries git push up to 3 times with 10 seconds between attempts.
+
+Why Push Retry Does Not Create Duplicate Commits
+
+The workflow creates the commit once before the retry loop. The retry loop only retries pushing the same commit. It does not run git commit again inside the loop.
+
+Required Confirmations
+
+logs/runtime_errors.log optional:
+Confirmed. The file is only an error artifact and valid no-signal scans do not necessarily create it.
+
+Missing runtime_errors.log no longer fails workflow:
+Confirmed by shell logic. Missing file now prints a skip message and continues.
+
+Heartbeat file still committed:
+Confirmed. logs/v12_observation_heartbeat.csv remains explicitly staged.
+
+Heartbeat states unaffected:
+Confirmed. This change does not touch scripts/run_v12_scan_once.py or heartbeat state generation. valid_no_signal, connector_unavailable, data_fetch_failed, and signal_found states are unchanged.
+
+Push retry safety:
+Confirmed. The retry loop pushes the already-created commit and does not create additional commits.
+
+Validation
+
+Workflow YAML was edited only in the commit-back shell block.
+
+No Python files were changed.
+No V12 strategy files were changed.
+No local scan/backtest was run.
+No live or paper trading was enabled.
+
+Remaining Risks
+
+- GitHub platform scheduled workflow delays may still occur.
+- Persistent remote push failures after 3 attempts will still fail the workflow, as intended.
+- A true push conflict from concurrent commits may require a future infrastructure-only pull/rebase hardening step.
+
