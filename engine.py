@@ -7,6 +7,13 @@ Phase 3 testnet smoke engine:
 - routes only to V12_C3_15m_clean forward stream
 - logs generated signals
 - does not place live orders unless execute_orders=True is set in ENGINE_CONFIG
+
+V12 integration contract (restored):
+- candidate 15m OHLCV  -> V12 adapter entry timeframe
+- candidate 1H OHLCV   -> V12 adapter 1H ADX confirmation
+- BTC 1H OHLCV         -> BTC ADX + BTC RE regime inputs (C3)
+All bars supplied to the strategy are fully CLOSED at evaluation time
+(mandatory no-lookahead policy, see _filter_closed_bars).
 """
 
 from __future__ import annotations
@@ -63,6 +70,26 @@ ENGINE_CONFIG = {
             "testnet": True,
         },
     },
+}
+
+# ── V12 C3 data-contract constants (integration layer only) ─────────────────
+# Frozen elsewhere (DO NOT CHANGE HERE):
+#   universe ["BTC/USDT:USDT"], execute_orders=False,
+#   re_threshold_override=0.22 (governance finding under archaeology).
+V12_ENTRY_TIMEFRAME = "15m"   # candidate entry timeframe required by V12 adapter
+V12_CONFIRM_TIMEFRAME = "1h"  # candidate + BTC confirmation timeframe
+V12_OHLCV_LIMIT = 300         # warmup headroom for ADX/EMA/RE indicators
+V12_MIN_ENTRY_BARS = 200      # minimum closed 15m bars required by V12Strategy.generate_signal
+
+# Timeframe duration map used by the closed-bar filter. Timestamps returned by
+# the exchange are candle OPEN times; close_time = open_time + duration.
+_CLOSED_BAR_DELTAS = {
+    "15m": pd.Timedelta(minutes=15),
+    "30m": pd.Timedelta(minutes=30),
+    "1h": pd.Timedelta(hours=1),
+    "2h": pd.Timedelta(hours=2),
+    "4h": pd.Timedelta(hours=4),
+    "1d": pd.Timedelta(days=1),
 }
 
 
@@ -185,10 +212,16 @@ class TradingEngine:
         self.portfolio.is_halted = True
         self.portfolio.halt_reason = reason
 
-    async def _fetch_ohlcv_df(self, symbol: str, limit: int | None = None) -> pd.DataFrame:
+    async def _fetch_ohlcv_df(
+        self,
+        symbol: str,
+        timeframe: str | None = None,
+        limit: int | None = None,
+    ) -> pd.DataFrame:
+        tf = timeframe or self.config.get("timeframe", "1h")
         raw = await self.connectors["binance"].fetch_ohlcv(
             symbol,
-            self.config.get("timeframe", "1h"),
+            tf,
             limit or self.config.get("ohlcv_limit", 200),
         )
         if not raw:
@@ -196,6 +229,62 @@ class TradingEngine:
         df = pd.DataFrame(raw, columns=["timestamp", "open", "high", "low", "close", "volume"])
         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms", utc=True)
         return df
+
+    @staticmethod
+    def _filter_closed_bars(
+        df: pd.DataFrame, timeframe: str, now: datetime | None = None
+    ) -> pd.DataFrame:
+        """
+        Closed-bar policy (mandatory no-lookahead rule).
+
+        Timestamp convention: exchange OHLCV timestamps are candle OPEN times.
+        A bar is usable at evaluation time t iff:
+
+            open_time + timeframe_duration <= t
+
+        i.e. the bar is fully CLOSED at t. This simultaneously excludes:
+          - the currently forming candle (its close occurs after t)
+          - any future candle (open_time > t implies close_time > t)
+
+        Boundary: a bar whose close_time == t IS usable (its close is known at
+        instant t). This matches the inclusive convention already used by
+        v12_strategy.align_1h_adx_to_15m (merge_asof direction="backward" on
+        candle-CLOSE timestamps).
+        """
+        if df.empty:
+            return df
+        delta = _CLOSED_BAR_DELTAS.get(timeframe)
+        if delta is None:
+            raise ValueError(f"Unsupported timeframe for closed-bar filter: {timeframe}")
+        t = pd.Timestamp(now or datetime.now(timezone.utc))
+        ts = df["timestamp"]
+        if ts.dt.tz is None:
+            ts = ts.dt.tz_localize("UTC")
+        mask = (ts + delta) <= t
+        return df.loc[mask].reset_index(drop=True)
+
+    @staticmethod
+    def _build_btc_regime(btc_1h_closed: pd.DataFrame) -> dict:
+        """
+        Build the existing V12 C3 BTC regime inputs from CLOSED BTC 1H bars.
+
+        Reuses v12_strategy.compute_v12_15m indicator math UNCHANGED:
+          - btc_adx_1h = ADX(14) on BTC 1H              (BTC ADX confirm)
+          - btc_re     = 20-bar range efficiency on BTC 1H (BTC RE)
+        Values are read from the last fully closed BTC 1H bar.
+        """
+        if btc_1h_closed.empty:
+            return {}
+        from v12_strategy import compute_v12_15m
+
+        feats = compute_v12_15m(btc_1h_closed)
+        row = feats.iloc[-1]
+        adx = row.get("adx")
+        re = row.get("range_efficiency")
+        return {
+            "btc_adx_1h": float(adx) if pd.notna(adx) else 0.0,
+            "btc_re": float(re) if pd.notna(re) else 0.0,
+        }
 
     async def _regime_detection_once(self):
         for symbol in self.config["symbols"]:
@@ -224,16 +313,65 @@ class TradingEngine:
             logger.warning("Signal generation skipped: halted (%s)", self.portfolio.halt_reason)
             return
 
+        now = datetime.now(timezone.utc)
+
+        # ── V12 C3 data contract: BTC 1H regime inputs (BTC ADX + BTC RE) ──
+        btc_regime: dict = {}
+        try:
+            btc_raw = await self._fetch_ohlcv_df(
+                "BTC/USDT:USDT",
+                timeframe=V12_CONFIRM_TIMEFRAME,
+                limit=V12_OHLCV_LIMIT,
+            )
+            btc_closed = self._filter_closed_bars(btc_raw, V12_CONFIRM_TIMEFRAME, now=now)
+            btc_regime = self._build_btc_regime(btc_closed)
+            logger.info(
+                "BTC REGIME INPUTS: adx_1h=%s re=%s closed_bars=%d",
+                btc_regime.get("btc_adx_1h", ""),
+                btc_regime.get("btc_re", ""),
+                len(btc_closed),
+            )
+        except Exception as exc:
+            logger.warning("BTC 1H regime data unavailable: %s", exc)
+
         for symbol in self.config["symbols"]:
             try:
                 if symbol not in self._regime_cache:
                     logger.info("SIGNAL %s skipped: no regime yet", symbol)
                     continue
 
-                df = await self._fetch_ohlcv_df(symbol, limit=120)
-                if df.empty:
-                    logger.warning("%s signal skipped: no OHLCV data", symbol)
+                # ── V12 C3 data contract: candidate 15m + candidate 1H ─────
+                df15_raw = await self._fetch_ohlcv_df(
+                    symbol, timeframe=V12_ENTRY_TIMEFRAME, limit=V12_OHLCV_LIMIT
+                )
+                df1h_raw = await self._fetch_ohlcv_df(
+                    symbol, timeframe=V12_CONFIRM_TIMEFRAME, limit=V12_OHLCV_LIMIT
+                )
+                df15 = self._filter_closed_bars(df15_raw, V12_ENTRY_TIMEFRAME, now=now)
+                df1h = self._filter_closed_bars(df1h_raw, V12_CONFIRM_TIMEFRAME, now=now)
+                if df15.empty or df1h.empty:
+                    logger.warning(
+                        "%s signal skipped: incomplete OHLCV (15m=%d bars, 1h=%d bars)",
+                        symbol,
+                        len(df15),
+                        len(df1h),
+                    )
                     continue
+                if len(df15) < V12_MIN_ENTRY_BARS:
+                    logger.warning(
+                        "%s signal skipped: insufficient closed 15m bars "
+                        "(%d available, %d required by V12 adapter)",
+                        symbol,
+                        len(df15),
+                        V12_MIN_ENTRY_BARS,
+                    )
+                    continue
+                logger.info(
+                    "DATA %s: 15m=%d bars, 1h=%d bars (closed-bar filtered)",
+                    symbol,
+                    len(df15),
+                    len(df1h),
+                )
 
                 regime, _ = self._regime_cache[symbol]
                 strategy_set = self.strategy_sets[symbol]
@@ -246,7 +384,11 @@ class TradingEngine:
                         if strategy is None:
                             continue
 
-                        signal = strategy.generate_signal(df)
+                        signal = strategy.generate_signal(
+                            ohlcv_15m=df15,
+                            ohlcv_1h=df1h,
+                            btc_regime=btc_regime,
+                        )
                         if signal is None:
                             logger.info("SIGNAL %s/%s: none", symbol, strategy_name)
                             continue
@@ -256,7 +398,7 @@ class TradingEngine:
                                 from notifications.signal_pipeline import handle_v12_signal
 
                                 pipeline_result = await handle_v12_signal(
-                                    self._build_v12_signal_data(signal, regime, df)
+                                    self._build_v12_signal_data(signal, regime, df15, df1h)
                                 )
                                 logger.info("V12 PIPELINE %s: %s", symbol, pipeline_result)
                             except Exception as exc:
@@ -304,11 +446,20 @@ class TradingEngine:
         )
         self._signal_log = self._signal_log[-100:]
 
-    def _build_v12_signal_data(self, signal: Signal, regime, ohlcv: pd.DataFrame | None = None) -> dict:
+    def _build_v12_signal_data(
+        self,
+        signal: Signal,
+        regime,
+        ohlcv: pd.DataFrame | None = None,
+        ohlcv_1h: pd.DataFrame | None = None,
+    ) -> dict:
         metadata = signal.metadata or {}
         signal_timestamp = datetime.fromtimestamp(signal.timestamp, timezone.utc).isoformat()
         entry_price = signal.price if signal.price is not None else ""
-        enriched = self._extract_signal_metadata(ohlcv)
+        # ohlcv_1h is forwarded so adx_confirm_tf reflects the TRUE 1H
+        # confirmation ADX (historical records show it distinct from the 15m
+        # entry ADX), instead of falling back to the 15m value.
+        enriched = self._extract_signal_metadata(ohlcv, ohlcv_1h)
         return {
             "signal_id": f"V12_C3_15m_clean_{signal.symbol}_{signal.side}_{signal_timestamp}_{entry_price}",
             "logged_at": datetime.now(timezone.utc).isoformat(),
@@ -345,13 +496,26 @@ class TradingEngine:
             "news_sources": "",
         }
 
-    def _extract_signal_metadata(self, ohlcv: pd.DataFrame | None) -> dict:
+    def _extract_signal_metadata(
+        self,
+        ohlcv: pd.DataFrame | None = None,
+        ohlcv_1h: pd.DataFrame | None = None,
+    ) -> dict:
         if ohlcv is None or ohlcv.empty:
             return {}
         try:
             from v12_strategy import compute_v12_15m
 
             df = ohlcv.copy().sort_values("timestamp").reset_index(drop=True)
+            if ohlcv_1h is not None and not ohlcv_1h.empty:
+                try:
+                    from v12_strategy import align_1h_adx_to_15m
+
+                    # Existing no-lookahead merge: each 15m row receives the
+                    # ADX of the last 1H bar whose CLOSE time <= row time.
+                    df = align_1h_adx_to_15m(df, ohlcv_1h)
+                except Exception as exc:
+                    logger.warning("V12 1H confirmation alignment failed: %s", exc)
             features = compute_v12_15m(df)
             row = features.iloc[-1]
             close = features["close"]
