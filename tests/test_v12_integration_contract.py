@@ -160,7 +160,10 @@ def test_signal_path_supplies_full_v12_contract():
     now = datetime.now(timezone.utc)
 
     # End each series >= 2 bars before real 'now' so every bar is closed.
-    df15 = make_ohlcv(now - timedelta(minutes=15 * 82), 80, 15, seed=1)
+    # The 15m series must exceed V12_MIN_ENTRY_BARS (200) AFTER closed-bar
+    # filtering, otherwise the engine legitimately skips signal generation
+    # via the insufficient-bars guard and the adapter is never called.
+    df15 = make_ohlcv(now - timedelta(minutes=15 * 302), 300, 15, seed=1)
     df1h = make_ohlcv(now - timedelta(hours=62), 60, 60, seed=11)
 
     stub = StubConnector({(SYMBOL, "15m"): df15, (SYMBOL, "1h"): df1h})
@@ -190,6 +193,8 @@ def test_signal_path_supplies_full_v12_contract():
     assert "btc_adx_1h" in btc_regime and "btc_re" in btc_regime
     assert math.isfinite(float(btc_regime["btc_adx_1h"]))
     assert math.isfinite(float(btc_regime["btc_re"]))
+    # Guard consistency: supplied entry frame satisfies the adapter minimum.
+    assert len(ohlcv_15m) >= 200
 
     # Closed-bar property on supplied frames (evaluation at real now).
     t_now = pd.Timestamp(datetime.now(timezone.utc))
