@@ -4,6 +4,7 @@ import csv
 import json
 import os
 import sys
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -30,6 +31,26 @@ from notifications.telegram_bot import answer_callback_query, get_updates, send_
 
 CSV_SIGNAL_PATH = ROOT / "logs" / "v12_signals.csv"
 LAST_UPDATE_KEY = "telegram_last_update_id"
+
+# Transient upstream failures (e.g. Google Sheets 503) are retried with
+# backoff instead of failing the whole scheduled workflow run.
+POLL_MAX_ATTEMPTS = 4
+POLL_BACKOFF_SECONDS = [15, 30, 60]
+TRANSIENT_ERROR_PATTERNS = (
+    "503",
+    "500",
+    "429",
+    "unavailable",
+    "backend error",
+    "internal error",
+    "rate limit",
+    "ratelimit",
+    "timeout",
+    "timed out",
+    "connection reset",
+    "connection aborted",
+    "broken pipe",
+)
 
 
 @dataclass
@@ -293,10 +314,47 @@ def run_dry_tests() -> dict[str, Any]:
     }
 
 
+def _is_transient_error(error_text: str) -> bool:
+    lowered = (error_text or "").lower()
+    return any(pattern in lowered for pattern in TRANSIENT_ERROR_PATTERNS)
+
+
 def main() -> int:
-    result = poll_once()
+    result: dict[str, Any] = {}
+    for attempt in range(1, POLL_MAX_ATTEMPTS + 1):
+        try:
+            result = poll_once()
+        except Exception as exc:  # noqa: BLE001 - convert crashes into retryable results
+            result = {"status": "ERROR", "processed": 0, "error": f"{type(exc).__name__}: {exc}"}
+
+        if result.get("status") == "OK":
+            break
+
+        error_text = str(result.get("error", ""))
+        if not _is_transient_error(error_text):
+            break
+
+        if attempt < POLL_MAX_ATTEMPTS:
+            delay = POLL_BACKOFF_SECONDS[min(attempt - 1, len(POLL_BACKOFF_SECONDS) - 1)]
+            print(
+                f"telegram_review_poll_once: transient upstream error "
+                f"(attempt {attempt}/{POLL_MAX_ATTEMPTS}); retrying in {delay}s -> {error_text}",
+                flush=True,
+            )
+            time.sleep(delay)
+
+    if result.get("status") != "OK" and _is_transient_error(str(result.get("error", ""))):
+        # Upstream (Google Sheets / Telegram) outage; the next scheduled run
+        # (every 15 minutes) will pick this up, so do not fail the workflow.
+        result["status"] = "skipped_transient_upstream_error"
+        print(
+            "telegram_review_poll_once: exhausted retries on transient upstream error; "
+            "leaving it to the next scheduled run.",
+            flush=True,
+        )
+
     print(json.dumps({"telegram_review_poll_once": result}, ensure_ascii=False, indent=2))
-    return 0 if result.get("status") in {"OK", "skipped_missing_env"} else 1
+    return 0 if result.get("status") in {"OK", "skipped_missing_env", "skipped_transient_upstream_error"} else 1
 
 
 if __name__ == "__main__":
