@@ -7,6 +7,8 @@ Validation levels covered:
   Level 2    : historical signal-schema sanity (field presence + values)
   Governance : frozen-config guards (execute_orders, universe, 0.22)
   F-5(a)     : BTC RE canonical 15m semantics + btc_adx_1h 1H defense
+  F-5(b)     : gate-composition parity (backtest vs forward),
+               fail-closed matrix, C3 threshold inclusive boundary
 
 Level 3 (deterministic replay of 2026-05-04) is NOT COVERED here:
 the original OHLCV required for replay is not available in this repository.
@@ -32,9 +34,13 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import core.strategies.v12_adapter as v12_adapter_module
+from core.strategies.base import StrategyConfig
+from core.strategies.v12_adapter import V12Strategy
 from engine import ENGINE_CONFIG, TradingEngine
 from v12_strategy import (
     align_1h_adx_to_15m,
+    check_entry_long,
     compute_v12_15m,
     shift_candle_open_to_close,
 )
@@ -186,6 +192,88 @@ class CaptureStrategy:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# F-5(b) gate-test helpers (synthetic single-row gate fixtures)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def make_gate_row(
+    close: float = 110.0,
+    ema20: float = 105.0,
+    ema50: float = 100.0,
+    adx: float = 38.0,
+    atr: float = 2.0,
+) -> dict:
+    """
+    A row that SATISFIES every C3 condition by default:
+      close(110) > ema20(105) > ema50(100)   -> bullish stack
+      close(110) > prior_high(105)           -> breakout (passed separately)
+      adx(38) >= 30                          -> candidate trend strength
+      atr(2) > 0                             -> validity gate
+    Individual fields can be overridden to flip exactly one condition.
+    """
+    return {
+        "close": close,
+        "open": close - 1.0,
+        "high": close + 0.5,
+        "low": close - 2.0,
+        "ema20": ema20,
+        "ema50": ema50,
+        "adx": adx,
+        "atr": atr,
+    }
+
+
+PASSING_BTC_REGIME = {"btc_adx_1h": 36.8, "btc_re": 0.31}
+
+
+def backtest_style_call(row, prior_high, atr, adx_1h, btc_regime) -> bool:
+    """
+    Exactly the invocation shape used by backtest simulate_v12_v2:
+    btc regime passed POSITIONALLY, thresholds passed explicitly.
+    """
+    return check_entry_long(
+        row,
+        prior_high,
+        atr,
+        adx_1h,
+        btc_regime,
+        mode="C3",
+        adx_entry_override=30.0,
+        re_threshold_override=0.22,
+        btc_re_lower=0.20,
+        btc_re_upper=0.40,
+    )
+
+
+def forward_style_call(row, prior_high, atr, adx_1h, btc_regime) -> bool:
+    """
+    Exactly the invocation shape used by the forward adapter after F-5(b)
+    Phase-2: btc regime as KEYWORD, thresholds passed explicitly.
+    """
+    return check_entry_long(
+        row,
+        prior_high,
+        atr,
+        adx_1h,
+        btc_regime=btc_regime,
+        mode="C3",
+        adx_entry_override=30.0,
+        re_threshold_override=0.22,
+        btc_re_lower=0.20,
+        btc_re_upper=0.40,
+    )
+
+
+def make_adapter() -> V12Strategy:
+    cfg = StrategyConfig(symbol=SYMBOL, exchange="binance", capital_usdt=100.0)
+    return V12Strategy(
+        cfg,
+        mode="C3",
+        adx_entry_override=30.0,
+        re_threshold_override=0.22,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Governance guards (frozen constraints)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -197,10 +285,9 @@ def test_frozen_execution_config_unchanged():
 
 def test_re_threshold_override_default_untouched():
     """Governance: adapter default re_threshold_override must remain 0.22."""
-    v12_adapter = pytest.importorskip("core.strategies.v12_adapter")
     import inspect
 
-    sig = inspect.signature(v12_adapter.V12Strategy.__init__)
+    sig = inspect.signature(v12_adapter_module.V12Strategy.__init__)
     assert "re_threshold_override" in sig.parameters
     assert sig.parameters["re_threshold_override"].default == 0.22
 
@@ -682,3 +769,182 @@ def test_v12_signal_schema_fields_present():
     assert float(data["adx_entry_tf"]) >= 0.0
     assert float(data["adx_confirm_tf"]) >= 0.0
     assert float(data["atr"]) > 0.0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# F-5(b) Phase-2 — T1: gate-composition parity (backtest vs forward)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_t1_gate_composition_parity():
+    """
+    T1 (F-5(b)): backtest-style and forward-style C3 gate invocations must
+    produce IDENTICAL acceptance/rejection results for identical inputs.
+
+    Each case flips exactly ONE condition so the matrix independently covers:
+      - candidate ADX          (fail_adx)
+      - BTC 1H ADX             (fail_adx, confirmation leg)
+      - BTC RE below band      (fail_btc_regime_c3)
+      - BTC RE above band      (fail_btc_regime_c3)
+      - breakout missing       (fail_breakout)
+      - EMA stack broken       (fail_breakout)
+      - all conditions met     (accept)
+    Every cell asserts BOTH the expected boolean (non-vacuous) AND
+    forward == backtest.
+    """
+    cases = [
+        # (label, row-overrides, prior_high, adx_1h, btc-overrides, expected)
+        ("all_conditions_met", {}, 105.0, 34.0, {}, True),
+        ("candidate_adx_low", {"adx": 25.0}, 105.0, 34.0, {}, False),
+        ("btc_1h_adx_low", {}, 105.0, 15.0, {}, False),
+        ("btc_re_below_band", {}, 105.0, 34.0, {"btc_re": 0.10}, False),
+        ("btc_re_above_band", {}, 105.0, 34.0, {"btc_re": 0.55}, False),
+        ("breakout_missing", {}, 115.0, 34.0, {}, False),
+        ("ema_stack_broken", {"ema20": 112.0}, 105.0, 34.0, {}, False),
+    ]
+
+    for label, row_ovr, prior_high, adx_1h, btc_ovr, expected in cases:
+        row = make_gate_row(**row_ovr)
+        btc = {**PASSING_BTC_REGIME, **btc_ovr}
+
+        bt = backtest_style_call(row, prior_high, row["atr"], adx_1h, btc)
+        fw = forward_style_call(row, prior_high, row["atr"], adx_1h, btc)
+
+        assert bt is expected, (
+            f"{label}: backtest-style returned {bt}, expected {expected}"
+        )
+        assert fw is bt, (
+            f"{label}: forward-style ({fw}) != backtest-style ({bt})"
+        )
+
+
+def test_t1_adapter_call_carries_explicit_thresholds(monkeypatch):
+    """
+    T1 companion (F-5(b) Phase-2 core assertion): the REAL forward adapter
+    must invoke check_entry_long with EXPLICIT btc_re_lower=0.20 /
+    btc_re_upper=0.40 (plus the frozen mode/override values), i.e. the
+    structural-parity upgrade is actually wired at the call site.
+    """
+    real_fn = v12_adapter_module.check_entry_long
+    captured: dict = {}
+
+    def spy(row, *args, **kwargs):
+        captured["args"] = args
+        captured["kwargs"] = kwargs
+        return real_fn(row, *args, **kwargs)
+
+    monkeypatch.setattr(v12_adapter_module, "check_entry_long", spy)
+
+    strategy = make_adapter()
+    now = datetime.now(timezone.utc)
+    df15 = make_ohlcv(now - timedelta(minutes=15 * 302), 300, 15, seed=51)
+    df1h = make_ohlcv(now - timedelta(hours=62), 60, 60, seed=52)
+
+    # Outcome (signal or None) is irrelevant here; the gate is ALWAYS
+    # consulted at step 5, so the spy is guaranteed to fire.
+    strategy.generate_signal(
+        ohlcv_15m=df15,
+        ohlcv_1h=df1h,
+        btc_regime=dict(PASSING_BTC_REGIME),
+    )
+
+    assert "kwargs" in captured, "adapter never invoked check_entry_long"
+    kw = captured["kwargs"]
+    assert kw["mode"] == "C3"
+    assert kw["adx_entry_override"] == 30.0
+    assert kw["re_threshold_override"] == 0.22
+    # Phase-2 core assertions: thresholds are now EXPLICIT at the call site.
+    assert kw["btc_re_lower"] == 0.20
+    assert kw["btc_re_upper"] == 0.40
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# F-5(b) Phase-2 — T2: fail-closed matrix (no forward-only signals)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_t2_fail_closed_matrix():
+    """
+    T2 (F-5(b)): every missing/invalid-data scenario must REJECT. There is
+    no code path in which degraded data produces an acceptance that healthy
+    data would not.
+    """
+    row = make_gate_row()
+
+    # 1) BTC regime missing entirely (incl. the adapter's zeroed fallback shape)
+    assert forward_style_call(row, 105.0, row["atr"], 34.0, None) is False
+    assert forward_style_call(row, 105.0, row["atr"], 34.0, {}) is False
+    assert forward_style_call(
+        row, 105.0, row["atr"], 34.0, {"btc_adx_1h": 0, "btc_re": 0}
+    ) is False
+
+    # 2) NaN regime values must also fail closed (NaN comparisons are False)
+    nan_btc = {"btc_adx_1h": float("nan"), "btc_re": float("nan")}
+    assert forward_style_call(row, 105.0, row["atr"], 34.0, nan_btc) is False
+
+    # 3) NaN / invalid REQUIRED indicators (validity gate)
+    bad_close = make_gate_row()
+    bad_close["close"] = float("nan")
+    assert forward_style_call(bad_close, 105.0, 2.0, 34.0, PASSING_BTC_REGIME) is False
+
+    bad_ema = make_gate_row()
+    bad_ema["ema50"] = float("nan")
+    assert forward_style_call(bad_ema, 105.0, 2.0, 34.0, PASSING_BTC_REGIME) is False
+
+    nan_atr = make_gate_row()
+    assert forward_style_call(
+        nan_atr, 105.0, float("nan"), 34.0, PASSING_BTC_REGIME
+    ) is False
+
+    zero_atr = make_gate_row()
+    assert forward_style_call(
+        zero_atr, 105.0, 0.0, 34.0, PASSING_BTC_REGIME
+    ) is False
+
+    nan_adx_1h = make_gate_row()
+    assert forward_style_call(
+        nan_adx_1h, 105.0, nan_adx_1h["atr"], float("nan"), PASSING_BTC_REGIME
+    ) is False
+
+    # 4) Empty / absent / insufficient candidate data at the adapter boundary
+    strategy = make_adapter()
+    assert strategy.generate_signal(
+        ohlcv_15m=pd.DataFrame(), ohlcv_1h=None, btc_regime=dict(PASSING_BTC_REGIME)
+    ) is None
+    assert strategy.generate_signal(
+        ohlcv_15m=None, ohlcv_1h=None, btc_regime=dict(PASSING_BTC_REGIME)
+    ) is None
+    tiny = make_ohlcv(
+        datetime.now(timezone.utc) - timedelta(minutes=15 * 60), 50, 15, seed=53
+    )
+    assert strategy.generate_signal(
+        ohlcv_15m=tiny, ohlcv_1h=None, btc_regime=dict(PASSING_BTC_REGIME)
+    ) is None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# F-5(b) Phase-2 — T3: C3 threshold inclusive boundary
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_t3_c3_threshold_boundary_inclusive():
+    """
+    T3 (F-5(b)): with every other C3 condition satisfied, the BTC RE band is
+    INCLUSIVE on both ends. Pins the exact frozen semantics:
+        0.199 -> reject | 0.20 -> pass | 0.40 -> pass | 0.401 -> reject
+    Verified through BOTH invocation styles so neither side can drift.
+    """
+    cases = [
+        (0.199, False),
+        (0.20, True),
+        (0.31, True),
+        (0.40, True),
+        (0.401, False),
+    ]
+
+    for btc_re, expected in cases:
+        row = make_gate_row()
+        btc = {"btc_adx_1h": 36.8, "btc_re": btc_re}
+
+        fw = forward_style_call(row, 105.0, row["atr"], 34.0, btc)
+        bt = backtest_style_call(row, 105.0, row["atr"], 34.0, btc)
+
+        assert fw is expected, f"btc_re={btc_re}: forward-style got {fw}"
+        assert bt is expected, f"btc_re={btc_re}: backtest-style got {bt}"

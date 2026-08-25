@@ -32,6 +32,14 @@ class V12Strategy(BaseStrategy):
 
         self.mode = mode
         self.adx_entry_override = adx_entry_override
+        # ── GOVERNANCE NOTE: re_threshold_override provenance UNKNOWN ──────
+        # Origin: commit 38cef46 "Initial QuantCore forward observation
+        # deployment" (2026-05-04); no rationale recorded anywhere in the
+        # repository (git log -S / blame exhausted; no PR/issue/docs).
+        # This value is NOT read in C3 mode: the C3 branch of
+        # check_entry_long consumes btc_re_lower/btc_re_upper only; this
+        # override is read solely by non-C3 branches.
+        # DO NOT modify without an explicit new governance ruling.
         self.re_threshold_override = re_threshold_override
 
     # =====================================================
@@ -75,6 +83,10 @@ class V12Strategy(BaseStrategy):
             }
 
         # 5. entry filter
+        # F-5(b) Phase-2: C3 thresholds are passed EXPLICITLY so the
+        # forward call is structurally identical to the backtest call
+        # (simulate_v12_v2), not merely coincidentally equal to its
+        # implicit defaults. Values are frozen: 0.20 / 0.40.
         ok = check_entry_long(
             row,
             float(row.get("prior_high_20", 0)),
@@ -84,6 +96,8 @@ class V12Strategy(BaseStrategy):
             mode=self.mode,
             adx_entry_override=self.adx_entry_override,
             re_threshold_override=self.re_threshold_override,
+            btc_re_lower=0.20,
+            btc_re_upper=0.40,
         )
 
         if not ok:
