@@ -377,17 +377,27 @@ def test_align_1h_adx_backward_merge_no_future_leak():
 
 def test_btc_15m_path_no_lookahead_regression():
     """
-    TEST #2 (F-5(a)): an unclosed/future BTC 15m candle carrying a
+    TEST #2 (F-5(a)): an unclosed/forming BTC 15m candle carrying a
     deliberately distinctive value must NOT affect btc_re through the new
     BTC 15m regime path, verified END-TO-END through
     _signal_generation_once (not solely via the generic 1H filter tests).
+
+    Fixture arithmetic (corrected after first run):
+      - good: 300 bars starting at now - 15*300 min -> the LAST good bar
+        opens at now-15m and CLOSES AT now (usable under the inclusive
+        closed-bar boundary).
+      - adversarial: opens at NOW (last good + 15m) and therefore CLOSES at
+        now+15m > now -> genuinely FORMING -> must be dropped by the
+        closed-bar filter. (An earlier version opened the adversarial bar at
+        now-15m, which closed exactly at 'now' and was legitimately kept;
+        that was a fixture off-by-one, not an implementation defect.)
     """
     engine = make_engine()
     now = datetime.now(timezone.utc)
 
     # 300 good 15m bars; the last one opens at now-15m and closes at now
     # (usable under the inclusive closed-bar boundary).
-    good = make_ohlcv(now - timedelta(minutes=15 * 301), 300, 15, seed=31)
+    good = make_ohlcv(now - timedelta(minutes=15 * 300), 300, 15, seed=31)
 
     # Adversarial FORMING bar: opens at 'now', closes at now+15m, with an
     # extreme spike. If any lookahead existed, this bar would become the
