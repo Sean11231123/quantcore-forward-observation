@@ -382,15 +382,24 @@ def test_btc_15m_path_no_lookahead_regression():
     BTC 15m regime path, verified END-TO-END through
     _signal_generation_once (not solely via the generic 1H filter tests).
 
-    Fixture arithmetic (corrected after first run):
-      - good: 300 bars starting at now - 15*300 min -> the LAST good bar
-        opens at now-15m and CLOSES AT now (usable under the inclusive
-        closed-bar boundary).
-      - adversarial: opens at NOW (last good + 15m) and therefore CLOSES at
-        now+15m > now -> genuinely FORMING -> must be dropped by the
-        closed-bar filter. (An earlier version opened the adversarial bar at
-        now-15m, which closed exactly at 'now' and was legitimately kept;
-        that was a fixture off-by-one, not an implementation defect.)
+    Fixture corrections history (both were TEST-side defects, the engine
+    behaved correctly in every run):
+      1. Off-by-one (run 1): the adversarial bar originally opened at
+         now-15m and therefore CLOSED exactly at 'now', which the approved
+         inclusive closed-bar boundary legitimately keeps. Fixed by starting
+         the good series at now - 15*300 min so the adversarial bar opens AT
+         'now' and closes at now+15m -> genuinely FORMING -> must be dropped.
+      2. Timestamp-precision mismatch (run 2): the test-side reference frame
+         ('filtered', built directly from the in-test DataFrame) carries
+         MICROSECOND timestamps, while the engine-side candidate frame went
+         through StubConnector's int(ms) round-trip and therefore carries
+         MILLSECOND timestamps. Exact timestamp equality between the two
+         paths therefore fails even though the bars are identical. Fixed by
+         using a POSITIONAL reference (the contemporaneous BTC 15m bar is
+         simply the LAST bar of the closed-bar-filtered series) and tying
+         the two frames together by closing price instead of timestamp
+         equality. range_efficiency depends only on OHLCV values, never on
+         timestamp precision, so this reference is semantically identical.
     """
     engine = make_engine()
     now = datetime.now(timezone.utc)
@@ -435,15 +444,18 @@ def test_btc_15m_path_no_lookahead_regression():
     assert len(filtered) == len(raw15) - 1
     assert filtered["timestamp"].iloc[-1] == good["timestamp"].iloc[-1]
 
-    # Independent reference: RE of the BTC 15m bar aligned to the candidate
-    # candle OPEN stamp (contemporaneous bar), computed WITHOUT the
-    # adversarial bar.
+    # Independent reference: the BTC 15m bar aligned to the candidate candle
+    # OPEN stamp is the CONTEMPORANEOUS bar — i.e. the LAST bar of the
+    # closed-bar-filtered series. Use a positional reference (immune to the
+    # ms/us precision difference between the direct-DataFrame path used here
+    # and the StubConnector ms-round-trip inside the engine) and tie the two
+    # frames together by closing price instead of exact timestamp equality.
     candidate = cap.kwargs["ohlcv_15m"]
-    cand_open = candidate["timestamp"].iloc[-1]
-    feats = compute_v12_15m(filtered)
-    ref_rows = feats.loc[feats["timestamp"] == cand_open]
-    assert len(ref_rows) == 1
-    expected_re = float(ref_rows["range_efficiency"].iloc[0])
+    assert len(candidate) == len(filtered)
+    assert candidate["close"].iloc[-1] == pytest.approx(
+        float(filtered["close"].iloc[-1])
+    )
+    expected_re = float(compute_v12_15m(filtered)["range_efficiency"].iloc[-1])
 
     # What a lookahead bug WOULD have produced (adversarial bar as the
     # regime source row):
@@ -451,7 +463,9 @@ def test_btc_15m_path_no_lookahead_regression():
 
     # The future/forming bar must have had NO effect on btc_re.
     assert btc_regime["btc_re"] == pytest.approx(expected_re, rel=1e-9)
-    # Fixture sanity: the leaked value is materially different.
+    # Fixture sanity: the leaked value is materially different (the spike
+    # inflates the 20-bar range far more than the net displacement, so the
+    # leaked RE collapses toward ~0.9 while the clean walk sits well below).
     assert abs(btc_regime["btc_re"] - leaked_re) > 0.1
 
 
