@@ -11,7 +11,10 @@ Phase 3 testnet smoke engine:
 V12 integration contract (restored):
 - candidate 15m OHLCV  -> V12 adapter entry timeframe
 - candidate 1H OHLCV   -> V12 adapter 1H ADX confirmation
-- BTC 1H OHLCV         -> BTC ADX + BTC RE regime inputs (C3)
+- BTC 1H OHLCV         -> BTC ADX (btc_adx_1h; canonical source, unchanged)
+- BTC 15m OHLCV        -> BTC RE (btc_re; F-5(a) Backtest canonical
+                          definition: 20-bar range efficiency on BTC 15m,
+                          asof-backward aligned to each candidate 15m candle)
 All bars supplied to the strategy are fully CLOSED at evaluation time
 (mandatory no-lookahead policy, see _filter_closed_bars).
 """
@@ -264,27 +267,67 @@ class TradingEngine:
         return df.loc[mask].reset_index(drop=True)
 
     @staticmethod
-    def _build_btc_regime(btc_1h_closed: pd.DataFrame) -> dict:
+    def _build_btc_regime(
+        btc_1h_closed: pd.DataFrame,
+        btc_15m_closed: pd.DataFrame | None = None,
+        candidate_15m: pd.DataFrame | None = None,
+    ) -> dict:
         """
-        Build the existing V12 C3 BTC regime inputs from CLOSED BTC 1H bars.
+        Build the existing V12 C3 BTC regime inputs.
 
-        Reuses v12_strategy.compute_v12_15m indicator math UNCHANGED:
-          - btc_adx_1h = ADX(14) on BTC 1H              (BTC ADX confirm)
-          - btc_re     = 20-bar range efficiency on BTC 1H (BTC RE)
-        Values are read from the last fully closed BTC 1H bar.
+        Canonical semantics (governance decision F-5(a)):
+          - btc_adx_1h = ADX(14) on CLOSED BTC 1H bars       (UNCHANGED)
+          - btc_re     = 20-bar range efficiency on CLOSED BTC 15m bars
+                         (Backtest canonical definition; see
+                         backtest/v12_backtest.py::_load_btc_regime, where
+                         range_efficiency is computed on the BTC 15m frame
+                         and renamed to btc_re)
+
+        Alignment (Backtest canonical asof-backward semantics, replicated
+        from backtest/v12_backtest.py::_prepare): with a candidate 15m frame
+        supplied, select the latest BTC 15m candle whose OPEN timestamp is
+        <= the candidate candle OPEN timestamp. On the shared 15-minute grid
+        this is the contemporaneous candle, which closes together with the
+        candidate bar. A newer BTC 15m candle that is merely closed at
+        wall-clock scan time is NOT used.
         """
-        if btc_1h_closed.empty:
-            return {}
         from v12_strategy import compute_v12_15m
 
-        feats = compute_v12_15m(btc_1h_closed)
-        row = feats.iloc[-1]
-        adx = row.get("adx")
-        re = row.get("range_efficiency")
-        return {
-            "btc_adx_1h": float(adx) if pd.notna(adx) else 0.0,
-            "btc_re": float(re) if pd.notna(re) else 0.0,
-        }
+        regime: dict = {}
+
+        if not btc_1h_closed.empty:
+            feats_1h = compute_v12_15m(btc_1h_closed)
+            row_1h = feats_1h.iloc[-1]
+            adx = row_1h.get("adx")
+            regime["btc_adx_1h"] = float(adx) if pd.notna(adx) else 0.0
+
+        if btc_15m_closed is None or btc_15m_closed.empty:
+            # Fail-closed: mirrors Backtest behaviour when BTC regime data
+            # is absent (the C3 gate sees btc_re=0 and rejects the entry).
+            regime["btc_re"] = 0.0
+            return regime
+
+        feats_15m = compute_v12_15m(btc_15m_closed)
+        regime_15m = feats_15m[["timestamp", "range_efficiency"]].rename(
+            columns={"range_efficiency": "btc_re"}
+        )
+
+        if candidate_15m is not None and not candidate_15m.empty:
+            # Backtest canonical asof-backward alignment (identical mechanics
+            # to _prepare in backtest/v12_backtest.py): candidate OPEN stamp
+            # vs BTC 15m OPEN stamp, direction="backward".
+            merged = pd.merge_asof(
+                candidate_15m.sort_values("timestamp"),
+                regime_15m.sort_values("timestamp"),
+                on="timestamp",
+                direction="backward",
+            )
+            re_value = merged["btc_re"].iloc[-1]
+        else:
+            re_value = feats_15m["range_efficiency"].iloc[-1]
+
+        regime["btc_re"] = float(re_value) if pd.notna(re_value) else 0.0
+        return regime
 
     async def _regime_detection_once(self):
         for symbol in self.config["symbols"]:
@@ -315,24 +358,33 @@ class TradingEngine:
 
         now = datetime.now(timezone.utc)
 
-        # ── V12 C3 data contract: BTC 1H regime inputs (BTC ADX + BTC RE) ──
-        btc_regime: dict = {}
+        # ── V12 C3 data contract: BTC regime inputs ─────────────────────
+        # btc_adx_1h <- BTC 1H (canonical source, unchanged)
+        # btc_re     <- BTC 15m (F-5(a): Backtest canonical definition,
+        #               20-bar range efficiency on BTC 15m; asof-backward
+        #               aligned to each candidate 15m candle OPEN stamp).
+        # NOTE: the additional BTC 15m fetch is NOT universe expansion;
+        # BTC/USDT:USDT is the already-configured candidate symbol.
+        btc_1h_closed: pd.DataFrame = pd.DataFrame()
+        btc_15m_closed: pd.DataFrame = pd.DataFrame()
         try:
-            btc_raw = await self._fetch_ohlcv_df(
+            btc_raw_1h = await self._fetch_ohlcv_df(
                 "BTC/USDT:USDT",
                 timeframe=V12_CONFIRM_TIMEFRAME,
                 limit=V12_OHLCV_LIMIT,
             )
-            btc_closed = self._filter_closed_bars(btc_raw, V12_CONFIRM_TIMEFRAME, now=now)
-            btc_regime = self._build_btc_regime(btc_closed)
-            logger.info(
-                "BTC REGIME INPUTS: adx_1h=%s re=%s closed_bars=%d",
-                btc_regime.get("btc_adx_1h", ""),
-                btc_regime.get("btc_re", ""),
-                len(btc_closed),
-            )
+            btc_1h_closed = self._filter_closed_bars(btc_raw_1h, V12_CONFIRM_TIMEFRAME, now=now)
         except Exception as exc:
             logger.warning("BTC 1H regime data unavailable: %s", exc)
+        try:
+            btc_raw_15m = await self._fetch_ohlcv_df(
+                "BTC/USDT:USDT",
+                timeframe=V12_ENTRY_TIMEFRAME,
+                limit=V12_OHLCV_LIMIT,
+            )
+            btc_15m_closed = self._filter_closed_bars(btc_raw_15m, V12_ENTRY_TIMEFRAME, now=now)
+        except Exception as exc:
+            logger.warning("BTC 15m regime data unavailable: %s", exc)
 
         for symbol in self.config["symbols"]:
             try:
@@ -371,6 +423,19 @@ class TradingEngine:
                     symbol,
                     len(df15),
                     len(df1h),
+                )
+
+                # ── BTC regime (per-candidate asof alignment) ───────────
+                try:
+                    btc_regime = self._build_btc_regime(btc_1h_closed, btc_15m_closed, df15)
+                except Exception as exc:
+                    logger.warning("BTC regime build failed for %s: %s", symbol, exc)
+                    btc_regime = {}
+                logger.info(
+                    "BTC REGIME INPUTS: adx_1h=%s re=%s "
+                    "(btc_re: BTC 15m/20-bar, asof-backward vs candidate OPEN stamp)",
+                    btc_regime.get("btc_adx_1h", ""),
+                    btc_regime.get("btc_re", ""),
                 )
 
                 regime, _ = self._regime_cache[symbol]

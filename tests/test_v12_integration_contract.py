@@ -6,6 +6,7 @@ Validation levels covered:
   Lookahead  : mandatory closed-bar / no-future-leak temporal semantics
   Level 2    : historical signal-schema sanity (field presence + values)
   Governance : frozen-config guards (execute_orders, universe, 0.22)
+  F-5(a)     : BTC RE canonical 15m semantics + btc_adx_1h 1H defense
 
 Level 3 (deterministic replay of 2026-05-04) is NOT COVERED here:
 the original OHLCV required for replay is not available in this repository.
@@ -62,6 +63,63 @@ def make_ohlcv(
     high = np.maximum(open_, close) + rng.uniform(0.0, base_price * 0.001, periods)
     low = np.minimum(open_, close) - rng.uniform(0.0, base_price * 0.001, periods)
     vol = rng.uniform(100.0, 1000.0, periods)
+    return pd.DataFrame(
+        {
+            "timestamp": ts,
+            "open": open_,
+            "high": high,
+            "low": low,
+            "close": close,
+            "volume": vol,
+        }
+    )
+
+
+def make_linear_ramp_ohlcv(
+    start: datetime,
+    periods: int,
+    freq_min: int,
+    step: float = 1.0,
+    base_price: float = 100.0,
+) -> pd.DataFrame:
+    """Deterministic perfect uptrend: 20-bar range efficiency == 1.0 exactly."""
+    ts = pd.date_range(start, periods=periods, freq=f"{freq_min}min", tz="UTC")
+    close = base_price + step * np.arange(periods)
+    open_ = np.concatenate([[base_price], close[:-1]])
+    high = np.maximum(open_, close)
+    low = np.minimum(open_, close)
+    vol = np.full(periods, 500.0)
+    return pd.DataFrame(
+        {
+            "timestamp": ts,
+            "open": open_,
+            "high": high,
+            "low": low,
+            "close": close,
+            "volume": vol,
+        }
+    )
+
+
+def make_sinusoid_ohlcv(
+    start: datetime,
+    periods: int,
+    freq_min: int,
+    amplitude: float = 5.0,
+    base_price: float = 100.0,
+    period_bars: int = 20,
+) -> pd.DataFrame:
+    """
+    Deterministic oscillation with an exact `period_bars` cycle.
+    Over any full-period window, close(t) == close(t - period), so the
+    20-bar range efficiency is ~0 and ADX stays low.
+    """
+    ts = pd.date_range(start, periods=periods, freq=f"{freq_min}min", tz="UTC")
+    close = base_price + amplitude * np.sin(2.0 * np.pi * np.arange(periods) / period_bars)
+    open_ = np.concatenate([[base_price], close[:-1]])
+    high = np.maximum(open_, close)
+    low = np.minimum(open_, close)
+    vol = np.full(periods, 500.0)
     return pd.DataFrame(
         {
             "timestamp": ts,
@@ -317,25 +375,196 @@ def test_align_1h_adx_backward_merge_no_future_leak():
     assert brows["adx_1h"].iloc[0] == pytest.approx(float(expected), abs=1e-9)
 
 
-def test_build_btc_regime_matches_manual_range_efficiency():
-    """BTC RE must equal |C_t - C_{t-20}| / (HH20 - LL20) on closed BTC 1H bars."""
+def test_btc_15m_path_no_lookahead_regression():
+    """
+    TEST #2 (F-5(a)): an unclosed/future BTC 15m candle carrying a
+    deliberately distinctive value must NOT affect btc_re through the new
+    BTC 15m regime path, verified END-TO-END through
+    _signal_generation_once (not solely via the generic 1H filter tests).
+    """
     engine = make_engine()
     now = datetime.now(timezone.utc)
-    df1h = make_ohlcv(now - timedelta(hours=82), 80, 60, seed=5)
-    closed = engine._filter_closed_bars(df1h, "1h", now=now)
-    assert len(closed) >= 21
 
-    regime = engine._build_btc_regime(closed)
+    # 300 good 15m bars; the last one opens at now-15m and closes at now
+    # (usable under the inclusive closed-bar boundary).
+    good = make_ohlcv(now - timedelta(minutes=15 * 301), 300, 15, seed=31)
 
-    c = closed["close"].reset_index(drop=True)
-    h = closed["high"].reset_index(drop=True)
-    l = closed["low"].reset_index(drop=True)
-    denom = float(h.iloc[-20:].max() - l.iloc[-20:].min())
+    # Adversarial FORMING bar: opens at 'now', closes at now+15m, with an
+    # extreme spike. If any lookahead existed, this bar would become the
+    # regime source row and distort btc_re.
+    last_close = float(good["close"].iloc[-1])
+    adversarial = pd.DataFrame(
+        {
+            "timestamp": [pd.Timestamp(good["timestamp"].iloc[-1]) + pd.Timedelta(minutes=15)],
+            "open": [last_close],
+            "high": [last_close * 2.30],
+            "low": [last_close * 0.99],
+            "close": [last_close * 2.20],
+            "volume": [10_000.0],
+        }
+    )
+    raw15 = pd.concat([good, adversarial], ignore_index=True)
+
+    df1h = make_ohlcv(now - timedelta(hours=62), 60, 60, seed=32)
+
+    stub = StubConnector({(SYMBOL, "15m"): raw15, (SYMBOL, "1h"): df1h})
+    engine.connectors = {"binance": stub}
+
+    cap = CaptureStrategy()
+    engine.strategy_sets[SYMBOL]["strategies"]["v12_trend"] = cap
+    engine.strategy_sets[SYMBOL]["router"].route = lambda regime: ["v12_trend"]
+    engine._regime_cache[SYMBOL] = (fake_regime(), time.time())
+
+    asyncio.run(engine._signal_generation_once())
+
+    assert cap.kwargs is not None, "adapter was never called"
+    btc_regime = cap.kwargs["btc_regime"]
+
+    # The closed-bar filter must drop exactly the adversarial bar.
+    filtered = engine._filter_closed_bars(raw15, "15m", now=now)
+    assert len(filtered) == len(raw15) - 1
+    assert filtered["timestamp"].iloc[-1] == good["timestamp"].iloc[-1]
+
+    # Independent reference: RE of the BTC 15m bar aligned to the candidate
+    # candle OPEN stamp (contemporaneous bar), computed WITHOUT the
+    # adversarial bar.
+    candidate = cap.kwargs["ohlcv_15m"]
+    cand_open = candidate["timestamp"].iloc[-1]
+    feats = compute_v12_15m(filtered)
+    ref_rows = feats.loc[feats["timestamp"] == cand_open]
+    assert len(ref_rows) == 1
+    expected_re = float(ref_rows["range_efficiency"].iloc[0])
+
+    # What a lookahead bug WOULD have produced (adversarial bar as the
+    # regime source row):
+    leaked_re = float(compute_v12_15m(raw15)["range_efficiency"].iloc[-1])
+
+    # The future/forming bar must have had NO effect on btc_re.
+    assert btc_regime["btc_re"] == pytest.approx(expected_re, rel=1e-9)
+    # Fixture sanity: the leaked value is materially different.
+    assert abs(btc_regime["btc_re"] - leaked_re) > 0.1
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# F-5(a) — BTC regime canonical semantics (btc_re 15m / btc_adx_1h 1H)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_btc_re_timeframe_semantic_regression():
+    """
+    TEST #1 (F-5(a)): btc_re must equal the canonical BTC 15m / 20-bar
+    range efficiency and must NOT equal the 1H / 20-bar value.
+
+    Fixture: BTC 15m in a perfect linear ramp (RE == 1.0) vs BTC 1h in a
+    deterministic period-20 oscillation (RE ~ 0), so the two definitions
+    are materially distinguishable.
+    """
+    engine = make_engine()
+    now = datetime.now(timezone.utc)
+
+    df15_raw = make_linear_ramp_ohlcv(now - timedelta(minutes=15 * 82), 80, 15, step=1.0)
+    df1h_raw = make_sinusoid_ohlcv(now - timedelta(hours=62), 60, 60, amplitude=5.0)
+
+    closed_15m = engine._filter_closed_bars(df15_raw, "15m", now=now)
+    closed_1h = engine._filter_closed_bars(df1h_raw, "1h", now=now)
+    assert len(closed_15m) >= 21
+    assert len(closed_1h) >= 21
+
+    regime = engine._build_btc_regime(closed_1h, closed_15m, candidate_15m=closed_15m)
+
+    # Canonical expectation: manual 15m / 20-bar formula on the last bar.
+    c = closed_15m["close"].reset_index(drop=True)
+    h = closed_15m["high"].reset_index(drop=True)
+    low = closed_15m["low"].reset_index(drop=True)
+    denom = float(h.iloc[-20:].max() - low.iloc[-20:].min())
+    assert denom > 0
+    expected_15m_re = abs(float(c.iloc[-1]) - float(c.iloc[-21])) / denom
+
+    # Deprecated definition (for the negative assertion only):
+    ref_1h_re = float(compute_v12_15m(closed_1h)["range_efficiency"].iloc[-1])
+
+    # Fixture sanity: the two definitions are materially distinguishable.
+    assert expected_15m_re > 0.9   # linear ramp -> RE ~ 1.0
+    assert ref_1h_re < 0.05        # exact period-20 oscillation -> RE ~ 0
+
+    assert regime["btc_re"] == pytest.approx(expected_15m_re, abs=1e-9)
+    assert abs(regime["btc_re"] - ref_1h_re) > 0.3
+
+
+def test_build_btc_regime_matches_manual_range_efficiency():
+    """
+    Manual-formula verification of btc_re on the CANONICAL source timeframe.
+
+    UPDATED per governance decision F-5(a): btc_re is the BTC 15m / 20-bar
+    range efficiency (Backtest canonical definition). The previous version
+    of this test encoded the deprecated 1H-based semantics; only the
+    assertion basis was moved from 1H bars to 15m bars (reported separately
+    in the governance report, per authorization section 5).
+    """
+    engine = make_engine()
+    now = datetime.now(timezone.utc)
+    df15_raw = make_ohlcv(now - timedelta(minutes=15 * 82), 80, 15, seed=5)
+    df1h_raw = make_ohlcv(now - timedelta(hours=62), 60, 60, seed=6)
+    closed_15m = engine._filter_closed_bars(df15_raw, "15m", now=now)
+    closed_1h = engine._filter_closed_bars(df1h_raw, "1h", now=now)
+    assert len(closed_15m) >= 21
+
+    regime = engine._build_btc_regime(closed_1h, closed_15m, candidate_15m=closed_15m)
+
+    c = closed_15m["close"].reset_index(drop=True)
+    h = closed_15m["high"].reset_index(drop=True)
+    low = closed_15m["low"].reset_index(drop=True)
+    denom = float(h.iloc[-20:].max() - low.iloc[-20:].min())
     assert denom > 0
     expected_re = abs(float(c.iloc[-1]) - float(c.iloc[-21])) / denom
 
     assert regime["btc_re"] == pytest.approx(expected_re, rel=1e-9)
     assert 0.0 <= float(regime["btc_adx_1h"]) < 100.0
+
+
+def test_btc_adx_1h_defensive_semantic_regression():
+    """
+    TEST #3 (F-5(a)): btc_adx_1h must remain the BTC 1H-derived ADX(14),
+    NOT a 15m-derived value. This test exists specifically to prevent
+    future timeframe regressions caused by variable-name assumptions.
+
+    Fixture: BTC 1H with a strong deterministic second-half trend (high
+    ADX) vs BTC 15m in a deterministic period-20 oscillation (low ADX),
+    so the two derivations are materially distinguishable.
+    """
+    engine = make_engine()
+    now = datetime.now(timezone.utc)
+
+    # 1H: strong second-half trend injection (deterministic).
+    df1h_raw = make_ohlcv(now - timedelta(hours=82), 80, 60, seed=41)
+    strong = np.linspace(0.0, 60.0, 40)
+    anchor = float(df1h_raw["close"].iloc[39])
+    df1h_raw.loc[df1h_raw.index[40:], "close"] = anchor + strong
+    df1h_raw.loc[df1h_raw.index[40:], "open"] = anchor + np.concatenate([[0.0], strong[:-1]])
+    df1h_raw.loc[df1h_raw.index[40:], "high"] = (
+        df1h_raw[["open", "close"]].max(axis=1).iloc[40:] + 0.5
+    )
+    df1h_raw.loc[df1h_raw.index[40:], "low"] = (
+        df1h_raw[["open", "close"]].min(axis=1).iloc[40:] - 0.5
+    )
+
+    # 15m: deterministic oscillation -> low ADX.
+    df15_raw = make_sinusoid_ohlcv(now - timedelta(minutes=15 * 82), 80, 15, amplitude=5.0)
+
+    closed_1h = engine._filter_closed_bars(df1h_raw, "1h", now=now)
+    closed_15m = engine._filter_closed_bars(df15_raw, "15m", now=now)
+
+    regime = engine._build_btc_regime(closed_1h, closed_15m, candidate_15m=closed_15m)
+
+    expected_1h_adx = float(compute_v12_15m(closed_1h)["adx"].iloc[-1])
+    adx_15m = float(compute_v12_15m(closed_15m)["adx"].iloc[-1])
+
+    # Fixture sanity: the two derivations are materially distinguishable.
+    assert expected_1h_adx - adx_15m > 5.0
+
+    # Primary defense: btc_adx_1h must equal the 1H-derived ADX exactly.
+    assert regime["btc_adx_1h"] == pytest.approx(expected_1h_adx, rel=1e-9)
+    # Negative defense: it must NOT equal the 15m-derived ADX.
+    assert abs(regime["btc_adx_1h"] - adx_15m) > 5.0
 
 
 # ─────────────────────────────────────────────────────────────────────────────
