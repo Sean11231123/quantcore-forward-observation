@@ -113,3 +113,4 @@ data/forward/*
 data/forward/crypto_derivatives/*
 !data/forward/crypto_derivatives/bybit_hourly.csv
 !data/forward/crypto_derivatives/e2_forward_health_report.txt
+.aider*
