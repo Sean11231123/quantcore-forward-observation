@@ -29,8 +29,22 @@ class MeanReversionStrategy(BaseStrategy):
         self.rsi_overbought = rsi_overbought
         self.zscore_threshold = zscore_threshold
 
-    def generate_signal(self, ohlcv: pd.DataFrame, orderbook=None) -> Optional[Signal]:
-        close = ohlcv["close"]
+    def generate_signal(
+        self,
+        ohlcv: Optional[pd.DataFrame] = None,
+        orderbook=None,
+        ohlcv_15m: Optional[pd.DataFrame] = None,
+        ohlcv_1h: Optional[pd.DataFrame] = None,
+        btc_regime: Optional[dict] = None,
+    ) -> Optional[Signal]:
+        # The engine calls strategies with the V12-style kwargs
+        # (ohlcv_15m / ohlcv_1h / btc_regime); standalone callers may still
+        # pass a single ohlcv frame. Prefer the 15m entry frame.
+        frame = ohlcv_15m if ohlcv_15m is not None else ohlcv
+        if frame is None or frame.empty:
+            return None
+
+        close = frame["close"]
 
         ma = close.rolling(self.bb_period).mean()
         std = close.rolling(self.bb_period).std()

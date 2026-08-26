@@ -4,7 +4,8 @@ Layer 6: Trading Engine Orchestrator
 Phase 3 testnet smoke engine:
 - reads Binance Futures Testnet OHLCV
 - detects market regime
-- routes only to V12_C3_15m_clean forward stream
+- routes V12_C3_15m_clean forward stream (trending_bull/breakout)
+- routes mean_reversion stream (trending_bear)
 - logs generated signals
 - does not place live orders unless execute_orders=True is set in ENGINE_CONFIG
 
@@ -166,6 +167,12 @@ class TradingEngine:
                 )
             except Exception as exc:
                 logger.warning("V12Strategy unavailable for live engine: %s", exc)
+            try:
+                from core.strategies.mean_reversion import MeanReversionStrategy
+
+                strategies["mean_reversion"] = MeanReversionStrategy(cfg)
+            except Exception as exc:
+                logger.warning("MeanReversionStrategy unavailable for live engine: %s", exc)
             out[symbol] = {
                 "strategies": strategies,
                 "router": StrategyRouter(strategies),
