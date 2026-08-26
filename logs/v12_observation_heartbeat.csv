@@ -1604,3 +1604,7 @@ run_started_utc,run_completed_utc,completed,heartbeat_state,connector_available,
 2026-08-24T12:04:11Z,2026-08-24T12:04:15Z,Yes,valid_no_signal,Yes,Yes,Yes,No,0,0,0,0,0,,Yes,Yes,[]
 2026-08-24T13:06:08Z,2026-08-24T13:06:11Z,Yes,valid_no_signal,Yes,Yes,Yes,No,0,0,0,0,0,,Yes,Yes,[]
 2026-08-24T13:57:36Z,2026-08-24T13:57:39Z,Yes,valid_no_signal,Yes,Yes,Yes,No,0,0,0,0,0,,Yes,Yes,[]
+2026-08-26T03:10:27Z,2026-08-26T03:10:27Z,Yes,connector_unavailable,No,No,No,No,0,0,0,0,0,missing_binance_testnet_secret,No,No,"[""binance connector unavailable; no scan executed; BINANCE_TESTNET_KEY_present=False; BINANCE_TESTNET_SECRET_present=False""]"
+2026-08-26T11:46:04Z,2026-08-26T11:46:12Z,Yes,valid_no_signal,Yes,Yes,Yes,No,0,0,0,0,0,,Yes,Yes,[]
+2026-08-26T12:28:26Z,2026-08-26T12:28:29Z,Yes,valid_no_signal,Yes,Yes,Yes,No,0,0,0,0,0,,Yes,Yes,[]
+2026-08-26T12:38:30Z,2026-08-26T12:38:37Z,Yes,valid_no_signal,Yes,Yes,Yes,No,0,0,0,0,0,,Yes,Yes,[]
