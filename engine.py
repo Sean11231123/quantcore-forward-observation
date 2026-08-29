@@ -1,8 +1,8 @@
 """
 Layer 6: Trading Engine Orchestrator
 
-Phase 3 testnet smoke engine:
-- reads Binance Futures Testnet OHLCV
+Production market-data engine:
+- reads Binance Futures Production OHLCV
 - detects market regime
 - routes only to V12_C3_15m_clean forward stream
 - logs generated signals
@@ -64,13 +64,13 @@ ENGINE_CONFIG = {
         "binance": {
             "api_key": BINANCE_API_KEY,
             "api_secret": BINANCE_API_SECRET,
-            "testnet": True,
+            "testnet": False,
         },
         "okx": {
             "api_key": OKX_API_KEY,
             "api_secret": OKX_API_SECRET,
             "passphrase": OKX_PASSPHRASE,
-            "testnet": True,
+            "testnet": False,
         },
     },
 }
@@ -141,7 +141,7 @@ class TradingEngine:
                 api_key=cfg["api_key"],
                 api_secret=cfg["api_secret"],
                 passphrase=cfg.get("passphrase", ""),
-                testnet=cfg.get("testnet", True),
+                testnet=cfg.get("testnet", False),
             )
         return connectors
 
@@ -177,7 +177,7 @@ class TradingEngine:
         if self.running:
             return
 
-        logger.info("Trading Engine starting in testnet smoke mode")
+        logger.info("Trading Engine starting in %s mode", "testnet" if self.config.get("exchanges", {}).get("binance", {}).get("testnet", False) else "production")
         self.running = True
         try:
             while self.running:
