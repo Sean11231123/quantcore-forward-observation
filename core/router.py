@@ -13,13 +13,12 @@ from core.strategies.v12_adapter import V12Strategy
 
 class StrategyRouter:
     """
-    Routes the primary V12 forward stream, plus the mean-reversion
-    stream in bear regimes.
+    Routes only to the primary V12 forward stream.
     """
 
     REGIME_PRIORITY = {
         "trending_bull": ["v12_trend"],
-        "trending_bear": ["mean_reversion"],
+        "trending_bear": [],
         "breakout": ["v12_trend"],
         "ranging": [],
         "low_volatility": [],
