@@ -4,3 +4,27 @@ data/*
 ...
 .aider*
 .env
+
+# Environment / secrets
+.env
+*.env
+.env.*
+!.env.example
+.envrc
+
+# Google / API credentials
+service_account.json
+google_service_account.json
+credentials.json
+token.json
+*service*account*.json
+*credential*.json
+*credentials*.json
+*token*.json
+api_keys.json
+keys.json
+secrets.json
+secret.json
+*.key
+*.pem
+.streamlit/secrets.toml
