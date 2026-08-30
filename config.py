@@ -10,8 +10,8 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-BINANCE_API_KEY    = os.getenv("BINANCE_TESTNET_KEY", "")
-BINANCE_API_SECRET = os.getenv("BINANCE_TESTNET_SECRET", "")
+BINANCE_API_KEY    = os.getenv("BINANCE_PROD_KEY", "")
+BINANCE_API_SECRET = os.getenv("BINANCE_PROD_SECRET", "")
 OKX_API_KEY        = os.getenv("OKX_DEMO_KEY", "")
 OKX_API_SECRET     = os.getenv("OKX_DEMO_SECRET", "")
 OKX_PASSPHRASE     = os.getenv("OKX_DEMO_PASSPHRASE", "")

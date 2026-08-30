@@ -117,13 +117,13 @@ async def main() -> int:
     try:
         if "binance" not in engine.connectors:
             connector_available = "No"
-            key_present = bool(os.getenv("BINANCE_TESTNET_KEY", ""))
-            secret_present = bool(os.getenv("BINANCE_TESTNET_SECRET", ""))
-            summary["connector_failure_category"] = "missing_binance_testnet_secret" if not (key_present and secret_present) else "connector_initialization_failed"
+            key_present = bool(os.getenv("BINANCE_PROD_KEY", ""))
+            secret_present = bool(os.getenv("BINANCE_PROD_SECRET", ""))
+            summary["connector_failure_category"] = "missing_binance_prod_secret" if not (key_present and secret_present) else "connector_initialization_failed"
             summary["errors"].append(
                 "binance connector unavailable; no scan executed; "
-                f"BINANCE_TESTNET_KEY_present={key_present}; "
-                f"BINANCE_TESTNET_SECRET_present={secret_present}"
+                f"BINANCE_PROD_KEY_present={key_present}; "
+                f"BINANCE_PROD_SECRET_present={secret_present}"
             )
             print("v12_scan_once:")
             print(json.dumps(summary, ensure_ascii=False, indent=2))
@@ -173,8 +173,8 @@ async def main() -> int:
             "csv_written": summary["csv_written"],
             "duplicate_skipped": summary["duplicate_skipped"],
             "connector_failure_category": summary["connector_failure_category"],
-            "binance_testnet_key_present": "Yes" if os.getenv("BINANCE_TESTNET_KEY", "") else "No",
-            "binance_testnet_secret_present": "Yes" if os.getenv("BINANCE_TESTNET_SECRET", "") else "No",
+            "binance_testnet_key_present": "Yes" if os.getenv("BINANCE_PROD_KEY", "") else "No",
+            "binance_testnet_secret_present": "Yes" if os.getenv("BINANCE_PROD_SECRET", "") else "No",
             "errors_json": json.dumps(summary["errors"], ensure_ascii=False),
         })
 
