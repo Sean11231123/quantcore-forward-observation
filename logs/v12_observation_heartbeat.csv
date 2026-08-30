@@ -1628,3 +1628,4 @@ run_started_utc,run_completed_utc,completed,heartbeat_state,connector_available,
 # threshold. See governance records G-1, G-2, G-3 for full incident chain.
 # --- END G-2 GOVERNANCE NOTE ---
 2026-08-30T15:29:07Z,2026-08-30T15:29:08Z,Yes,data_fetch_failed,Yes,No,No,No,0,0,0,0,0,,Yes,Yes,"[""binance connector initialized but no regime data was fetched""]"
+2026-08-30T18:45:27Z,2026-08-30T18:45:28Z,Yes,data_fetch_failed,Yes,No,No,No,0,0,0,0,0,,Yes,Yes,"[""binance connector initialized but no regime data was fetched""]"
