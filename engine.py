@@ -124,6 +124,7 @@ class TradingEngine:
         self.connectors = self._setup_connectors()
         self.strategy_sets = self._setup_strategies()
         self._regime_cache: dict[str, tuple[object, float]] = {}
+        self._last_strategy_errors: list[str] = []
         self._trade_log: list[dict] = []
         self._signal_log: list[dict] = []
         self._lock = asyncio.Lock()
@@ -316,9 +317,18 @@ class TradingEngine:
             # Backtest canonical asof-backward alignment (identical mechanics
             # to _prepare in backtest/v12_backtest.py): candidate OPEN stamp
             # vs BTC 15m OPEN stamp, direction="backward".
+            candidate_15m_merge = candidate_15m.copy()
+            regime_15m_merge = regime_15m.copy()
+            candidate_15m_merge["timestamp"] = (
+                pd.to_datetime(candidate_15m_merge["timestamp"]).dt.as_unit("ms")
+            )
+            regime_15m_merge["timestamp"] = (
+                pd.to_datetime(regime_15m_merge["timestamp"]).dt.as_unit("ms")
+            )
+
             merged = pd.merge_asof(
-                candidate_15m.sort_values("timestamp"),
-                regime_15m.sort_values("timestamp"),
+                candidate_15m_merge.sort_values("timestamp"),
+                regime_15m_merge.sort_values("timestamp"),
                 on="timestamp",
                 direction="backward",
             )
@@ -485,6 +495,8 @@ class TradingEngine:
                         if self.config.get("execute_orders", False):
                             await self._execute_signal(signal)
                     except Exception as exc:
+                        error_message = f"{symbol}/{strategy_name}: {exc}"
+                        self._last_strategy_errors.append(error_message)
                         logger.warning(
                             "Strategy %s/%s skipped after error: %s",
                             symbol,

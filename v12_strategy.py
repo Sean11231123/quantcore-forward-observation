@@ -40,7 +40,7 @@ def _adx(df: pd.DataFrame, period: int = 14) -> pd.Series:
 def compute_v12_15m(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     out.columns = [c.lower() for c in out.columns]
-    out["timestamp"] = pd.to_datetime(out["timestamp"])
+    out["timestamp"] = pd.to_datetime(out["timestamp"]).dt.as_unit("ms")
 
     out["ema20"] = out["close"].ewm(span=20, adjust=False).mean()
     out["ema50"] = out["close"].ewm(span=50, adjust=False).mean()
@@ -73,7 +73,7 @@ def shift_candle_open_to_close(df: pd.DataFrame, timeframe: str) -> pd.DataFrame
     if timeframe not in offsets:
         raise ValueError(f"Unsupported timeframe for timestamp shift: {timeframe}")
     out = df.copy()
-    out["timestamp"] = pd.to_datetime(out["timestamp"])
+    out["timestamp"] = pd.to_datetime(out["timestamp"]).dt.as_unit("ms")
     out["timestamp"] = out["timestamp"] + offsets[timeframe]
     return out
 
@@ -82,9 +82,15 @@ def align_1h_adx_to_15m(df15: pd.DataFrame, df1h: pd.DataFrame) -> pd.DataFrame:
     one_hour = compute_v12_15m(df1h)
     one_hour = shift_candle_open_to_close(one_hour, "1h")
     one_hour = one_hour[["timestamp", "adx"]].rename(columns={"adx": "adx_1h"})
+
+    df15_merge = df15.copy()
+    one_hour_merge = one_hour.copy()
+    df15_merge["timestamp"] = pd.to_datetime(df15_merge["timestamp"]).dt.as_unit("ms")
+    one_hour_merge["timestamp"] = pd.to_datetime(one_hour_merge["timestamp"]).dt.as_unit("ms")
+
     return pd.merge_asof(
-        df15.sort_values("timestamp"),
-        one_hour.sort_values("timestamp"),
+        df15_merge.sort_values("timestamp"),
+        one_hour_merge.sort_values("timestamp"),
         on="timestamp",
         direction="backward",
     )
