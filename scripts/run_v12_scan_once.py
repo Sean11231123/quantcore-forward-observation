@@ -145,7 +145,11 @@ async def main() -> int:
             processed = max(after - before, 0)
             summary["signals_processed"] = processed
             summary["signal_found"] = "Yes" if processed else "No"
-            summary["heartbeat_state"] = "signal_found" if processed else "valid_no_signal"
+            if engine._last_strategy_errors:
+                summary["heartbeat_state"] = "strategy_execution_error"
+                summary["errors"].extend(engine._last_strategy_errors)
+            else:
+                summary["heartbeat_state"] = "signal_found" if processed else "valid_no_signal"
     except Exception as exc:
         summary["completed"] = "No"
         if connector_available == "Yes":
