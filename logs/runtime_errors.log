@@ -1,0 +1,1 @@
+2026-08-31T21:01:27.462141+00:00	google_sheets_get_bot_state	<HttpError 503 when requesting https://sheets.googleapis.com/v4/spreadsheets/1INwAohJAja-APv8AgAEHA1wdC1AJ1toYEXxNcyyxn00?alt=json returned "The service is currently unavailable.". Details: "The service is currently unavailable.">
