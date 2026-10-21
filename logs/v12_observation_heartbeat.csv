@@ -1939,3 +1939,4 @@ run_started_utc,run_completed_utc,completed,heartbeat_state,connector_available,
 2026-10-20T12:54:23Z,2026-10-20T12:54:25Z,Yes,data_fetch_failed,Yes,No,No,No,0,0,0,0,0,,Yes,Yes,"[""binance connector initialized but no regime data was fetched""]"
 2026-10-20T17:53:26Z,2026-10-20T17:53:29Z,Yes,data_fetch_failed,Yes,No,No,No,0,0,0,0,0,,Yes,Yes,"[""binance connector initialized but no regime data was fetched""]"
 2026-10-20T21:29:58Z,2026-10-20T21:29:59Z,Yes,data_fetch_failed,Yes,No,No,No,0,0,0,0,0,,Yes,Yes,"[""binance connector initialized but no regime data was fetched""]"
+2026-10-21T00:04:10Z,2026-10-21T00:04:11Z,Yes,data_fetch_failed,Yes,No,No,No,0,0,0,0,0,,Yes,Yes,"[""binance connector initialized but no regime data was fetched""]"
